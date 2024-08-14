@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const app = express();
 const token = process.env.TOKEN;
+const bot1 = new Telegraf(process.env.TOKEN)
 const bot = new TelegramBot(token, { polling: true });
 app.use(express.json());
 
@@ -14,6 +15,8 @@ const WEBAPP_URL = process.env.WEBAPP;
 const PORT = process.env.PORT || 3000;
 const SALT = process.env.SALT || 'your-salt-value'; // Define a salt for hashing
 const MongoDBURL = process.env.MONGODB_URL || 'mongodb://localhost:27017/telebot';
+const CHANNEL_ID = '@spintestdemo';
+
 
 // MongoDB connection
 mongoose.connect(MongoDBURL)
@@ -59,13 +62,27 @@ bot.setChatMenuButton({
   console.error('Error setting menu button:', error);
 });
 
+// Function to check if a user is in a specific channel
+async function isUserInChannel(userId) {
+  try {
+    const chatMember = await bot1.telegram.getChatMember(CHANNEL_ID, userId);
+    const isMember = chatMember.status === 'member' || chatMember.status === 'administrator' || chatMember.status === 'creator';
+
+    return isMember;
+  } catch (error) {
+    console.error('Error checking user in channel:', error);
+    return false;
+  }
+}
+
+
 // Handle /start command and referrals
 bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
   const username = msg.chat.first_name;
   const referralCode = msg.text.split(' ')[1]; // Extract referral code if present
   console.log(chatId);
-  
+  var test = bot1.telegram.getChatMember
   bot.getChatMember(chatId,msg.chat.id)
 
   if(referralCode){
@@ -123,6 +140,29 @@ bot.on('message', async (msg) => {
     console.error('Error sending message with WebApp button:', error);
   });
 });
+
+
+// New route to check if a user is in the channel
+app.post('/checkUser', async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'userId is required' });
+  }
+
+  try {
+    console.log(userId);
+    const isMember = await isUserInChannel(userId);
+    if (isMember) {
+      return res.status(200).json({ message: 'User is a member of the channel' });
+    } else {
+      return res.status(200).json({ message: 'User is NOT a member of the channel' });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
