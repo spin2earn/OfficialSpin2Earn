@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spin2Earn</title>
+  <link rel="stylesheet" href="styles/styles.css">
+  <!-- css -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+  <!-- fonts -->
+  <script src="https://kit.fontawesome.com/68d572b50a.js" crossorigin="anonymous"></script>
+  <!-- icons -->
+   
+</head>
+<body>
+
+  <div id="loading-screen">
+    <div class="spinner"></div>
+  </div>
+
+  <div id="main-content">
+    <div id="wheel-screen" class="wheel-screen js-tab" style="display: block;">
+      <div id="total-coins-wheel-screen" class="result-popup total-coins-wheel-screen">
+        <p id="total-coins-wheel-screen">Coins(e&#x20B9;) : <span id="total-coins-value">0</span></p>
+      </div>
+      <div class="wheel-container">
+        <div class="wheel"> 
+          <div class="number gold-num" style="--i:1;"><span>Jackpot!</span></div>
+          <div class="number grey-num" style="--i:2;"><span>low<br>Luck</span></div>
+          <div class="number gold-num" style="--i:3;"><span>Max<br>Win</span></div>
+          <div class="number grey-num" style="--i:4;"><span>Mini<br>Prize</span></div>
+          <div class="number gold-num" style="--i:5;"><span>Lucky<br>Dip</span></div>
+          <div class="number grey-num" style="--i:6;"><span>low<br>Spin</span></div>
+          <div class="number gold-num" style="--i:7;"><span>Grand<br>Prize</span></div>
+          <div class="number grey-num" style="--i:8;"><span>Small<br>Prize</span></div>
+        </div>
+        <div class="spinBtn">
+          <div class="spin-count"><span id="spin-count"></span></div>
+        </div>
+      </div>
+      <div id="result-popup" class="result-popup" style="display: none;">
+        <p id="result-message"><span id="result-value"></span>
+          <img class="ecoin-spin" src="images/ecoin.png" alt="coins">
+        </p>
+      </div>
+      <div id="no-spins-left" class="result-popup no-spins-left" style="display: none;">
+        <p id="result-message">All spins have been used</p>
+      </div>
+    </div>
+  
+    <div id="add-friend" class="add-friend js-tab">
+      <div class="friends-screen-container">
+        <h1>Invite friends <br> and get more Spins</h1>
+        <i class="fa-solid fa-user-plus" id="invite-icon"></i>
+        <div class="invite-link">
+          <p class="invite-title">My Invite Link</p>
+          <div class="links-box">
+            <button class="referrals-link-btn">
+              <i class="fa-solid fa-link"></i>
+            </button>
+            <button class="referrals-share-btn">
+              <i class="fa-solid fa-share-nodes"></i>
+            </button>
+          </div>
+          <p class="the-link">https://example/Referrals-link.com</p>
+        </div>
+        <p class="no-of-referrals">0 Referrals</p>
+        <div class="friends-grid">
+          
+        </div>
+      </div>
+    </div>
+  
+    <div id="withdrawal-record" class="withdrawal-record js-tab">
+      <p>transfer history</p>
+    </div>  
+  
+    <div id="profile" class="js-profile js-tab">
+      <div class="widthdraw-screen-container">
+        <div class="amount-box">
+          <div class="Withdrawable">
+            <p class="withdrawable-title">Withdrawable Balance <span id="withdrawable-value">&#x20B9;0</span></p>
+            <div class="withdrawable-method">
+              <p class="withdrawable-details">withdrawable method :</p>
+              <select id="withdrawal-method" class="withdrawal-method-select">
+                <option value="upi">UPI Transfer</option>
+                <option value="bank">Bank Transfer</option>
+              </select>
+            </div>
+            <div id="withdrawal-form-container">
+              <!-- UPI Transfer form -->
+              <form id="upi-form" class="withdrawal-form">
+                <div class="form-group">
+                  <label for="name">Name:</label>
+                  <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                  <label for="phone">Phone Number:</label>
+                  <input type="number" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                  <label for="upi-id">UPI ID:</label>
+                  <input type="text" id="upi-id" name="upi-id" required>
+                </div>
+                <div class="form-group">
+                  <label for="email">Email:</label>
+                  <input type="email" id="email" name="email" required>
+                </div>
+              </form>
+              <!-- Bank Transfer form -->
+              <form id="bank-form" class="withdrawal-form" style="display: none;">
+                <div class="form-group">
+                  <label for="name">Name:</label>
+                  <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                  <label for="phone">Phone Number:</label>
+                  <input type="number" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                  <label for="ifsc">IFSC:</label>
+                  <input type="text" id="ifsc" name="ifsc" required>
+                </div>
+                <div class="form-group">
+                  <label for="account-number">Bank Account Number:</label>
+                  <input type="number" id="account-number" name="account-number" required>
+                </div>
+              </form>
+              <button class="Withdraw-btn" type="submit" style="display: block;">Withdraw</button>
+              <div id="form-error-message" class="result-popup form-error-message">
+                <!-- Error message will be displayed here -->
+              </div>
+            </div>
+            <a href="#withdrawal-record" class="nav-link" id="nav-wallet-history">withdrawal history</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div id="dialy-tasks" class="js-dialy-task js-tab">
+      <div class="tasks-container">
+        <div id="total-coins" class="total-coins-task-screen">Coins(e&#x20B9;) : 0</div>
+        <div class="task-tabs">
+          <div class="task-tab" id="daily-tab" onclick="showTasks('daily')">Daily</div>
+          <div class="task-tab" id="weekly-tab" onclick="showTasks('weekly')">Weekly</div>
+        </div>
+        <div id="tasks-container"><!-- Daily tasks will be shown here by default --></div>
+      </div>
+    </div>
+  
+    <nav class="bottom-bar">
+      <a href="#wheel-screen" class="nav-link active" id="nav-spin">
+        <i class="fa-solid fa-arrows-spin"></i>
+        <span class="nav-text">Spin</span>
+      </a>
+      <a href="#dialy-tasks" class="nav-link" id="nav-tasks">
+        <i class="fa-solid fa-list-check"></i>
+        <span class="nav-text">Daily tasks</span>
+      </a>
+      <a href="#add-friend" class="nav-link" id="nav-friends">
+        <i class="fa-solid fa-user-group"></i>
+        <span class="nav-text">friends</span>
+      </a>
+      <a href="#profile" class="nav-link" id="nav-wallet">
+        <i class="fa-solid fa-wallet"></i>
+        <span class="nav-text">wallet</span>
+      </a>
+    </nav>
+  </div>
+  <script src="scripts/script.js"></script>
+</body>
+</html>

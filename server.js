@@ -2,21 +2,26 @@ const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
-const {Telegraf} = require('telegraf')
+const { Telegraf } = require('telegraf');
 require('dotenv').config();
+const path = require("path");
+const { type } = require('os');
 
 const app = express();
 const token = process.env.TOKEN;
-const bot1 = new Telegraf(process.env.TOKEN)
+const bot1 = new Telegraf(process.env.TOKEN);
 const bot = new TelegramBot(token, { polling: true });
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'views/')));
+app.set('view engine', 'ejs');
 
 const WEBAPP_URL = process.env.WEBAPP;
-const PORT = process.env.PORT || 3000;
-const SALT = process.env.SALT || 'your-salt-value'; // Define a salt for hashing
+const PORT = 3000;
+const SALT = process.env.SALT || 'your-salt-value';
 const MongoDBURL = process.env.MONGODB_URL || 'mongodb://localhost:27017/telebot';
 const CHANNEL_ID = '@spintestdemo';
 
+let realUserId;
 
 // MongoDB connection
 mongoose.connect(MongoDBURL)
@@ -31,19 +36,31 @@ mongoose.connect(MongoDBURL)
 const userSchema = new mongoose.Schema({
   userId: Number,
   username: String,
-  amount: { type: Number, default: 0 },
+  eCoins: { type: Number , default: 0 },
+  spinsLeft: {type: Number, default: 3 },
   referralUrl: String,
-  referrals: [String] // Store only Telegram usernames
+  referrals: [String],
+  tasks: { 
+    type: Map, 
+    of: Boolean, 
+    default: {} // Map to store task names as keys and their completion status as values
+  }
+});
+
+// Redeem code schema
+const redeemCodeSchema = new mongoose.Schema({
+  code: String
 });
 
 // User model
 const User = mongoose.model('User', userSchema);
+const RedeemCode = mongoose.model('RedeemCode', redeemCodeSchema);
 
 // Function to generate SHA-1 hash
 function generateHash(text) {
   const hash = crypto.createHash('sha1');
   hash.update(text + SALT);
-  return hash.digest('hex').substring(0, 20); // Use the first 20 characters of the hash
+  return hash.digest('hex').substring(0, 20);
 }
 
 // Generate a unique referral URL for a user
@@ -51,6 +68,7 @@ function generateReferralUrl(userId) {
   const hash = generateHash(userId.toString());
   return `https://t.me/${process.env.BOT_USERNAME}?start=${hash}`;
 }
+
 // Set up the menu button globally
 bot.setChatMenuButton({
   menu_button: {
@@ -66,9 +84,7 @@ bot.setChatMenuButton({
 async function isUserInChannel(userId) {
   try {
     const chatMember = await bot1.telegram.getChatMember(CHANNEL_ID, userId);
-    const isMember = chatMember.status === 'member' || chatMember.status === 'administrator' || chatMember.status === 'creator';
-
-    return isMember;
+    return chatMember.status === 'member' || chatMember.status === 'administrator' || chatMember.status === 'creator';
   } catch (error) {
     console.error('Error checking user in channel:', error);
     return false;
@@ -76,18 +92,13 @@ async function isUserInChannel(userId) {
 }
 
 
+
 // Handle /start command and referrals
 bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
   const username = msg.chat.first_name;
-  const referralCode = msg.text.split(' ')[1]; // Extract referral code if present
-  console.log(chatId);
-  var test = bot1.telegram.getChatMember
-  bot.getChatMember(chatId,msg.chat.id)
-
-  if(referralCode){
-    console.log(`Received referral code: ${referralCode}`);
-  }
+  const referralCode = msg.text.split(' ')[1];
+  realUserId = chatId;
 
   // Check if the user already exists in the database
   let user = await User.findOne({ userId: chatId });
@@ -101,21 +112,14 @@ bot.on('message', async (msg) => {
     });
 
     await user.save();
-    console.log(`User ${username} saved to the database.`);
 
-    // If the user joined via a referral link, update the referrer's record
+    // Process referral if applicable
     if (referralCode) {
       try {
         const referrer = await User.findOne({ referralUrl: `https://t.me/${process.env.BOT_USERNAME}?start=${referralCode}` });
         if (referrer) {
-          console.log(`Referrer found: ${referrer.username}`);
-          
-          // Add the new user's username to the referrer's referrals array
-          referrer.referrals.push(username); // Store only the new user's username
+          referrer.referrals.push(username);
           await referrer.save();
-          console.log(`User ${username} referred by ${referrer.username}. Referrals updated: ${referrer.referrals}`);
-        } else {
-          console.log('Referrer not found');
         }
       } catch (error) {
         console.error('Error processing referral:', error);
@@ -129,7 +133,7 @@ bot.on('message', async (msg) => {
       inline_keyboard: [
         [
           {
-            type:'web_app',
+            type: 'web_app',
             text: 'Open Game',
             web_app: { url: WEBAPP_URL }
           }
@@ -142,7 +146,9 @@ bot.on('message', async (msg) => {
 });
 
 
-// New route to check if a user is in the channel
+
+
+// Route to check if a user is in the channel
 app.post('/checkUser', async (req, res) => {
   const { userId } = req.body;
 
@@ -151,15 +157,138 @@ app.post('/checkUser', async (req, res) => {
   }
 
   try {
-    console.log(userId);
     const isMember = await isUserInChannel(userId);
     if (isMember) {
-      return res.status(200).json({ message: 'User is a member of the channel' });
+      return res.status(200).json({ message: 'True' });
     } else {
-      return res.status(200).json({ message: 'User is NOT a member of the channel' });
+      return res.status(200).json({ message: 'False' });
     }
   } catch (error) {
     return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post("/getFullDetails",async(req,res)=>{
+  const { userId } = req.body;
+  const user = await User.findOne({userId: userId})
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  res.status(200).json({url: user.referralUrl, referralMembers: user.referrals})
+})
+
+// Fetch incomplete tasks using POST
+app.post('/user/tasks/status', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await User.findOne({ userId });
+    if (!user) return res.status(404).send('User not found');
+    res.json(user.tasks);
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
+
+
+// Mark task as completed using POST
+app.post('/user/tasks/completed', async (req, res) => {
+  try {
+    const { userId, taskName } = req.body;
+    const user = await User.findOne({ userId });
+    if (!user) return res.status(404).send('User not found');
+
+    user.tasks.set(taskName, true);
+    await user.save();
+
+    res.send('Task marked as completed');
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
+
+
+// Main route
+app.get("/", async (req, res) => {
+  const userId = realUserId;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'userId is required' });
+  }
+
+  try {
+    const isMember = await isUserInChannel(userId);
+    if (!isMember) {
+      return res.status(403).json({ error: 'User is not a member of the channel' });
+    }
+    res.render('page', { userId });
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Route to check if a redeem code is valid
+app.post("/checkRedeemCode", async (req, res) => {
+  const { userRedeemCode } = req.body;
+
+  if (!userRedeemCode) {
+    return res.status(400).json({ error: 'userRedeemCode is required' });
+  }
+
+  try {
+    const redeemCode = await RedeemCode.findOne({ code: userRedeemCode });
+
+    if (!redeemCode) {
+      return res.status(400).json({ error: 'Invalid Redeem Code' });
+    } else {
+      return res.status(200).json({ message: 'Valid Redeem Code' });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Route to update eCoins when the wheel is spun
+app.post('/updateEcoins', async (req, res) => {
+  const { userId, eCoins , spinsLeft} = req.body;
+
+  if (!userId || eCoins == null) {
+    return res.status(400).json({ error: 'userId and eCoins are required' });
+  }
+
+  try {
+    // Find the user in the database
+    let user = await User.findOne({ userId: userId });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update the user's eCoins
+    user.eCoins += eCoins;
+    user.spinsLeft = spinsLeft;
+    await user.save();
+    console.log("eCoins and spinsLeft updated successfully");
+    
+    return res.status(200).json({ message: 'eCoins and spinsLeft updated successfully', totalECoins: user.eCoins, spinsLeft: user.spinsLeft});
+  } catch (error) {
+    console.error('Error updating eCoins:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/getECoins', async (req, res) => {
+  const { userId } = req.body;
+  try {
+    const user = await User.findOne({ userId: userId });
+    if (user) {
+      res.status(200).json({ eCoins: user.eCoins , spinsLeft: user.spinsLeft});
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

@@ -1,0 +1,653 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background: linear-gradient(rgb(0, 0, 0), rgb(92, 91, 91));
+}
+
+html {
+  height: 100%;
+  background: black;
+}
+
+.wheel-screen {
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  flex-direction: column;
+  height: 95vh;
+  width: 100vw;
+}
+
+.wheel-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.wheel {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 4px #DAA520,
+              0 0 0 15px #292B33,
+              0 0 0 18px #DAA520;
+  transition: transform 5s ease-in-out;
+  transform: rotate(0deg);
+  will-change: transform;
+  background: #333;
+}
+
+.gold-num {
+  background: linear-gradient(#F1D18A 0%, #D2A813 10%, #E5B80B 100%);
+}
+
+.grey-num {
+  background: linear-gradient(#C4C4C4 -90%, #7E7E7E 10%, #3B3B3B 50%);
+}
+
+.wheel .number {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  transform-origin: bottom right;
+  transform: rotate(calc(45deg * var(--i)));
+  clip-path: polygon(0 0, 56% 0, 100% 100%, 0 56%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+}
+
+.wheel .number span {
+  position: relative;
+  transform: rotate(45deg);
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.spinBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background: rgb(255, 255, 255);
+  border-radius: 50%;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #333;
+  border: 4px solid rgba(0, 0, 0, 0.75);
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.spinBtn::before {
+  content: '';
+  position: absolute;
+  top: -28px;
+  width: 20px;
+  height: 30px;
+  background: rgb(255, 255, 255);
+  clip-path: polygon(50% 0%, 15% 100%, 85% 100%);
+}
+
+.spin-count {
+  font-size: 25px;
+  font-weight: 900;
+  padding-bottom: 2%;
+}
+
+.result-popup {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.85);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 18px;
+  text-align: center;
+  z-index: 20;
+  max-width: 80%; /* Ensure long messages don't break into two lines */
+}
+
+.result-message {
+  font-size: 25px;
+  font-weight: bold;
+  white-space: nowrap; /* Prevents line breaks */
+}
+
+.no-spins-left, .form-error-message {
+  position: absolute;
+  top: 85%;
+  left: 50%;
+  width: 65%;
+}
+
+.form-error-message {
+  color: red;
+  background-color: transparent;
+  width: 80%;
+  box-shadow: 0 0;
+}
+
+#total-coins-wheel-screen {
+  display: inline;
+}
+
+.total-coins-wheel-screen {
+  display: inline;
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  background: #ff9100;
+  font-weight: bold;
+}
+
+.ecoin-spin {
+  margin-top: 10px;
+  width: 100px;
+  height: 100px;
+}
+
+#add-friend, #profile, #dialy-tasks, #withdrawal-record {
+  display: none;
+}
+
+.friends-screen-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.friends-screen-container h1 {
+  margin-top: -8vh;
+  font-size: 38px;
+}
+
+#invite-icon {
+  font-size: 80px;
+  margin: 5%;
+}
+
+.invite-link {
+  /* border: 1px solid white; */
+  background: #272A2F;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.380);
+  padding: 10px 30px;
+  border-radius: 20px;
+  margin-bottom: 3%;
+  width: 100%;
+}
+
+.invite-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 2%;
+  display: inline;
+}
+
+.links-box {
+  display: inline;
+}
+
+.referrals-link-btn {
+  border-radius: 50%;
+  margin-left: 3%;
+  margin-bottom: 5%;
+  background-color: #309CDD;
+  color: white;
+  border: none;
+  font-size: 16px;
+  padding: 5px 6px;
+}
+
+.referrals-link-btn:hover {
+  scale: 0.9;
+  background-color: #015e7a;
+  color: rgb(168, 168, 168);
+}
+
+.the-link {
+  font-size: 15px;
+  color: rgb(255, 255, 255);
+}
+
+.no-of-referrals {
+  font-size: 25px;
+  font-weight: bold;
+  margin-bottom: 5%;
+}
+
+.friends-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  margin-bottom: 4%;
+  max-height: 240px;
+  overflow-y: auto;
+  /* background: #272A2F; */
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.380);
+  width: 100%;
+  padding: 3% 2% 3% 8%;
+  border-radius: 15px;
+  box-sizing: border-box;
+}
+
+.friend-name {
+  font-size: 18px;
+  padding: 2%;
+}
+
+.widthdraw-screen-container {
+  /* width: 50vh; */
+  height: 92vh;
+  margin-top: 5%;
+}
+
+.amount-box {
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.Withdrawable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* width: 45vh; */
+}
+
+.withdrawable-title {
+  margin-top: 5%;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.withdrawable-method {
+  width: 99%;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  background: #272A2F;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.380);
+  padding: 5% 2%;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.withdrawable-details {
+  display: inline;
+  font-size: 16px;
+}
+
+.withdrawal-method-select {
+  background-color: #309CDD;
+  color: #ffffff;
+  padding: 1%;
+  padding-left: 4%;
+  padding-right: 3%;
+  border-radius: 10px;
+  border: none;
+  appearance: none;
+  outline: none;
+}
+
+.withdrawal-form {
+  /* width: 100%; */
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background: #272A2F;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.380);
+  border-radius: 10px;
+  font-weight: bold;
+  max-height: 270px;
+  overflow-y: auto;
+  margin-bottom: 10%;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 5%;
+}
+
+.form-group label {
+  margin-bottom: 2%;
+}
+
+.form-group input {
+  background-color: #c2c2c299;
+  border-radius: 5px;
+  font-size: 19px;
+}
+
+.Withdraw-btn {
+  background-color: #EBA917 !important;
+  margin-top: auto;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#nav-wallet-history {
+  margin-top: 12px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Task tab styling */
+
+.tasks-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 95vh;
+}
+
+.task-tabs {
+  display: flex;
+  justify-content: space-between;
+  margin: 5%;
+  margin-top: 2%;
+}
+
+.task-tab {
+  background-color: #272A2F;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  flex: 1;
+  margin: 0 10px;
+  transition: 0.30s;
+}
+
+.task-tab.active {
+  background-color: #5A60FF;
+  scale: 1.09;
+}
+
+/* Task container */
+#tasks-container {
+  display: grid;
+  margin: 20px;
+  margin-top: 10px;
+  max-height: 71%;
+  overflow-y: auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.380);
+  padding: 3% 2% 3% 2%;
+  border-radius: 10px;
+}
+
+/* Individual task styling */
+.task-item {
+  background-color: #272A2F;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.task-icon {
+  display: inline-block;
+  margin-right: 10px;
+  margin-bottom: -22px;
+  color: #ffffff;
+}
+
+.task-item p {
+  display: inline-block;
+  margin: 0 0 10px;
+}
+
+.task-item .task-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.task-item button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.task-item .go-button {
+  background-color: #5A60FF;
+  color: white;
+}
+
+.task-item .check-button {
+  background-color: #5A60FF;
+  color: white;
+}
+
+.special-input {
+  width: 55%;
+  padding: 10px;
+  font-size: 15px;
+  border: 1px solid #9c9c9c;
+  border-radius: 5px;
+  margin: 0 10px;
+}
+
+/* Fade out and move task styling */
+.task-item.completed {
+  opacity: 0.5;
+  transition: opacity 0.25s ease-in, transform 0.15s ease-out;
+  transform: translateY(25px);
+}
+
+.task-item.completed .task-buttons {
+  display: none;
+}
+
+.task-item.completed.move-to-bottom {
+  transform: translateY(1000px); /* Moves the task far down to make it look like it's moved to the bottom */
+  transition: transform 1s ease-out;
+}
+
+/* Transition delay for tasks at the bottom */
+.task-item.completed.move-to-bottom.delay {
+  transition-delay: 0.5s;
+}
+
+.total-coins-task-screen {
+  margin: 15px;
+  margin-top: 30px;
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.reward-popup {
+  position: fixed;
+  top: 68%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;
+  height: 50vh;
+  background: #2c313a;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border: 1px solid black;
+  border-top-color: #425378;
+  border-top-width: 5px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reward-popup h2 {
+  margin-bottom: 10px;
+}
+
+.reward-popup p {
+  margin-bottom: 20px;
+}
+
+.nav-link {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background-color 0.25s ease-in, color 0.25s ease-out;
+}
+
+.nav-link:hover {
+  background-color: #444;
+  color: #fff;
+}
+
+.nav-link.active {
+  background-color: #ffffffe3;
+  color: #333;
+}
+
+button[type="submit"] {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #444;
+  color: #fff;
+}
+
+.bottom-bar {
+  background-color: #333;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 55px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 99;
+}
+
+.bottom-bar .nav-link {
+  padding: 2%;
+  min-width: 70px;
+  text-align: center;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.bottom-bar .nav-link i {
+  font-size: 20px;
+}
+
+.bottom-bar .nav-text {
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.nav-link.active {
+  background-color: #ffffffe3;
+  color: #333;
+  padding: 2%;
+  border-radius: 10px;
+  transition: background-color 0.25s ease-in, color 0.25s ease-out;
+}
+
+.nav-link.active i {
+  color: #333;
+}
+
+.nav-link.active .nav-text {
+  color: #333;
+}
+
+/* Loading Screen */
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.spinner {
+  border: 8px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 8px solid #ffffff;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Hide the main content initially */
+#main-content {
+  display: none;
+}
