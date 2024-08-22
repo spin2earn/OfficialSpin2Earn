@@ -11,7 +11,8 @@ const app = express();
 const token = process.env.TOKEN;
 const bot1 = new Telegraf(process.env.TOKEN);
 const bot = new TelegramBot(token, { polling: true });
-app.use(express.json());
+app.use(express.json()); // for parsing application/json
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname, 'views/')));
 app.set('view engine', 'ejs');
 
@@ -52,9 +53,32 @@ const redeemCodeSchema = new mongoose.Schema({
   code: String
 });
 
+
+
+// UPI Withdrawal Schema
+const upiSchema = new mongoose.Schema({
+  userId: String,
+  name: String,
+  phone: String,
+  upiId: String,
+  email: String,
+});
+
+// Bank Withdrawal Schema
+const bankSchema = new mongoose.Schema({
+  userId: String,
+  name: String,
+  phone: String,
+  ifsc: String,
+  accountNumber: String,
+});
+
 // User model
 const User = mongoose.model('User', userSchema);
 const RedeemCode = mongoose.model('RedeemCode', redeemCodeSchema);
+const UPIWithdrawal = mongoose.model('UPIWithdrawal', upiSchema);
+const BankWithdrawal = mongoose.model('BankWithdrawal', bankSchema);
+
 
 // Function to generate SHA-1 hash
 function generateHash(text) {
@@ -227,6 +251,61 @@ app.get("/", async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
+app.post('/upiWithdrawal', async (req, res) => {
+  try {
+    const { userId, name, phone, upiId, email } = req.body;
+    console.log(req.body);
+    
+    // Validate required fields
+    if (!userId || !name || !phone || !upiId || !email) {
+      return res.status(400).json({ message: 'All fields are required for UPI withdrawal' });
+    }
+
+    // Create and save UPI withdrawal document
+    const newUPIWithdrawal = new UPIWithdrawal({
+      userId,
+      name,
+      phone,
+      upiId,
+      email,
+    });
+    await newUPIWithdrawal.save();
+
+    res.status(200).json({ message: 'UPI withdrawal request submitted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error submitting UPI withdrawal request' });
+  }
+});
+
+app.post('/bankWithdrawal', async (req, res) => {
+  try {
+    const { userId, name, phone, ifsc, account_number : accountNumber } = req.body;
+
+    // Validate required fields
+    if (!userId || !name || !phone || !ifsc || !accountNumber) {
+      return res.status(400).json({ message: 'All fields are required for bank withdrawal' });
+    }
+
+    // Create and save bank withdrawal document
+    const newBankWithdrawal = new BankWithdrawal({
+      userId,
+      name,
+      phone,
+      ifsc,
+      accountNumber,
+    });
+    await newBankWithdrawal.save();
+
+    res.status(200).json({ message: 'Bank withdrawal request submitted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error submitting bank withdrawal request' });
+  }
+});
+
 
 // Route to check if a redeem code is valid
 app.post("/checkRedeemCode", async (req, res) => {

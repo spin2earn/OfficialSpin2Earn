@@ -144,6 +144,7 @@ window.onload = function() {
 function updateTotalCoins() {
   document.getElementById('total-coins').textContent = `Total Coins: ${totalCoins}`;
   document.getElementById('total-coins-value').textContent = totalCoins;
+  updateWithdrawableBalance();
 }
 
 
@@ -319,19 +320,25 @@ document.getElementById('nav-wallet-history').addEventListener('click', function
 });
 
 function updateWithdrawableBalance() {
-  const withdrawableValueElement = document.getElementById('withdrawable-value');
   const withdrawableBalance = totalCoins / 1000;
-  withdrawableValueElement.textContent = `₹90`;
+  console.log(`Updating withdrawable balance: ${withdrawableBalance}`);
+  const withdrawableValueElement = document.getElementById('withdrawable-value');
+  withdrawableValueElement.textContent = `₹${withdrawableBalance.toFixed(2)}`;
 }
 
-updateWithdrawableBalance();
 
 // Get the withdraw button
 const withdrawButton = document.querySelector('.Withdraw-btn');
 // Add an event listener to the withdraw button
-withdrawButton.addEventListener('click', (e) => {
+withdrawButton.addEventListener('click', async (e) => {
   e.preventDefault();
+
   const activeForm = document.querySelector('.withdrawal-form:not([style*="display: none"])');
+  if (!activeForm) {
+    console.error('No active form found');
+    return;
+  }
+
   const nameInput = activeForm.querySelector('#name');
   const phoneInput = activeForm.querySelector('#phone');
 
@@ -356,78 +363,134 @@ withdrawButton.addEventListener('click', (e) => {
     errorMessage = 'Invalid phone number';
   }
 
-  // Validate UPI form
-  if (isValid && activeForm.id === 'upi-form') {
-    const upiIdInput = activeForm.querySelector('#upi-id');
-    const emailInput = activeForm.querySelector('#email');
-
-    if (upiIdInput.value.trim() === '') {
-      isValid = false;
-      errorMessage = 'Please enter your UPI ID';
-    }
-
-    const upiIdRegex = /^[a-zA-Z0-9._]+@[a-zA-Z0-9._]+$/;
-    if (isValid && !upiIdRegex.test(upiIdInput.value)) {
-      isValid = false;
-      errorMessage = 'Invalid UPI ID';
-    }
-
-    if (isValid && emailInput.value.trim() === '') {
-      isValid = false;
-      errorMessage = 'Please enter your email';
-    }
-
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (isValid && !emailRegex.test(emailInput.value)) {
-      isValid = false;
-      errorMessage = 'Invalid email';
-    }
-  }
-
-  // Validate Bank form
-  if (isValid && activeForm.id === 'bank-form') {
-    const ifscInput = activeForm.querySelector('#ifsc');
-    const accountNumberInput = activeForm.querySelector('#account-number');
-
-    if (ifscInput.value.trim() === '') {
-      isValid = false;
-      errorMessage = 'Please enter your IFSC code';
-    }
-
-    const ifscRegex = /^[A-Z]{4}0\d{6}$/;
-    if (isValid && !ifscRegex.test(ifscInput.value)) {
-      isValid = false;
-      errorMessage = 'Invalid IFSC code';
-    }
-
-    if (isValid && accountNumberInput.value.trim() === '') {
-      isValid = false;
-      errorMessage = 'Please enter your account number';
-    }
-  }
-
-  // Check minimum withdrawable balance
   if (isValid) {
-    const withdrawableBalance = totalCoins / 1000;
-    if (withdrawableBalance < 100) {
-      isValid = false;
-      errorMessage = 'Insufficient balance. Minimum requirement is 100Rs.';
-    }
-  }
+    let formData = {};
 
-  if (!isValid) {
-    formError.style.display = 'block';
-    const errorElement = document.createElement('p');
-    errorElement.textContent = errorMessage;
-    formError.appendChild(errorElement);
-    setTimeout(() => {
-      formError.style.display = 'none';
-      formError.removeChild(errorElement);
-    }, 1800); // Hide the popup after 1.8 seconds
-  } else {
-    activeForm.submit();
+    if (activeForm.id === 'upi-form') {
+      // UPI form validation
+      const upiIdInput = activeForm.querySelector('#upi-id');
+      const emailInput = activeForm.querySelector('#email');
+
+      if (upiIdInput.value.trim() === '') {
+        isValid = false;
+        errorMessage = 'Please enter your UPI ID';
+      }
+
+      const upiIdRegex = /^[a-zA-Z0-9._]+@[a-zA-Z0-9._]+$/;
+      if (isValid && !upiIdRegex.test(upiIdInput.value)) {
+        isValid = false;
+        errorMessage = 'Invalid UPI ID';
+      }
+
+      if (isValid && emailInput.value.trim() === '') {
+        isValid = false;
+        errorMessage = 'Please enter your email';
+      }
+
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (isValid && !emailRegex.test(emailInput.value)) {
+        isValid = false;
+        errorMessage = 'Invalid email';
+      }
+
+      // Construct the JSON object for UPI form
+      formData = {
+        name: nameInput.value,
+        phone: phoneInput.value,
+        upiId: upiIdInput.value,
+        email: emailInput.value,
+        userId: userId // Assuming userId is already defined in your scope
+      };
+    } else if (activeForm.id === 'bank-form') {
+      // Bank form validation
+      const ifscInput = activeForm.querySelector('#ifsc');
+      const accountNumberInput = activeForm.querySelector('#account-number');
+
+      if (ifscInput.value.trim() === '') {
+        isValid = false;
+        errorMessage = 'Please enter your IFSC code';
+      }
+
+      const ifscRegex = /^[A-Z]{4}0\d{6}$/;
+      if (isValid && !ifscRegex.test(ifscInput.value)) {
+        isValid = false;
+        errorMessage = 'Invalid IFSC code';
+      }
+
+      if (isValid && accountNumberInput.value.trim() === '') {
+        isValid = false;
+        errorMessage = 'Please enter your account number';
+      }
+
+      // Construct the JSON object for Bank form
+      formData = {
+        name: nameInput.value,
+        phone: phoneInput.value,
+        ifsc: ifscInput.value,
+        accountNumber: accountNumberInput.value,
+        userId: userId // Assuming userId is already defined in your scope
+      };
+    }
+
+    // Check minimum withdrawable balance
+    if (isValid) {
+      const withdrawableBalance = totalCoins / 1000;
+      if (withdrawableBalance < 100) {
+        isValid = false;
+        errorMessage = 'Insufficient balance. Minimum requirement is 100Rs.';
+      }
+    }
+
+    if (!isValid) {
+      // Display error message
+      formError.style.display = 'block';
+      const errorElement = document.createElement('p');
+      errorElement.textContent = errorMessage;
+      formError.appendChild(errorElement);
+
+      // Hide the popup after 1.8 seconds
+      setTimeout(() => {
+        formError.style.display = 'none';
+        formError.removeChild(errorElement);
+      }, 1800);
+    } else {
+      // Convert formData object to JSON string
+      const jsonData = JSON.stringify(formData);
+
+      // Determine the fetch URL based on the form ID
+      const fetchUrl = activeForm.id === 'upi-form' ? '/upiWithdrawal' : '/bankWithdrawal';
+
+      console.log(jsonData);
+      
+
+      try {
+        const response = await fetch(fetchUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: jsonData,
+        });
+
+        if (response.ok) {
+          // Handle successful response
+          console.log('Form submitted successfully');
+          alert('Withdrawal request submitted successfully!');
+          activeForm.reset(); // Reset the form after submission
+        } else {
+          // Handle errors
+          const errorResponse = await response.json();
+          console.error('Form submission failed:', errorResponse.message);
+          alert(`Error: ${errorResponse.message}`);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while submitting your request. Please try again later.');
+      }
+    }
   }
 });
+
 
 //task tab
 
