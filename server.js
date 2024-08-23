@@ -8,8 +8,8 @@ const path = require("path");
 
 const app = express();
 const token = process.env.TOKEN;
-const bot1 = new Telegraf(process.env.TOKEN, {polling: false});
-const bot = new TelegramBot(token, { polling: true });
+const bot1 = new Telegraf(process.env.TOKEN);
+const bot = new TelegramBot(token);
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname, 'views/')));
@@ -152,7 +152,8 @@ bot.on('message', async (msg) => {
     }
   }
 
-  // Send a message with a WebApp button
+  // Send a message with a WebApp button and pass the userId in the URL
+  const webAppUrlWithUserId = `${WEBAPP_URL}?userId=${chatId}`;
   bot.sendMessage(chatId, 'Welcome! Click the button below to open the WebApp:', {
     reply_markup: {
       inline_keyboard: [
@@ -160,7 +161,7 @@ bot.on('message', async (msg) => {
           {
             type: 'web_app',
             text: 'Open Game',
-            web_app: { url: WEBAPP_URL }
+            web_app: { url: webAppUrlWithUserId }
           }
         ]
       ]
@@ -169,6 +170,7 @@ bot.on('message', async (msg) => {
     console.error('Error sending message with WebApp button:', error);
   });
 });
+
 
 
 
@@ -236,7 +238,7 @@ app.post('/user/tasks/completed', async (req, res) => {
 
 // Main route
 app.get("/", async (req, res) => {
-  const userId = realUserId;
+  const userId = req.query.userId;
 
   if (!userId) {
     return res.status(400).json({ error: 'userId is required' });
