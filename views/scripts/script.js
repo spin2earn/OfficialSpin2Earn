@@ -308,16 +308,16 @@ withdrawalMethodSelect.addEventListener('change', (e) => {
   }
 });
 
-document.getElementById('nav-wallet-history').addEventListener('click', function(e) {
-  e.preventDefault();
-  navLinks.forEach(link => link.classList.remove('active')); // Remove 'active' from all links
-  this.classList.add('active');
-  const target = this.getAttribute('href');
-  tabs.forEach(tab => {
-    tab.style.display = 'none';
-  });
-  document.querySelector(target).style.display = 'block';
-});
+// document.getElementById('nav-wallet-history').addEventListener('click', function(e) {
+//   e.preventDefault();
+//   navLinks.forEach(link => link.classList.remove('active')); // Remove 'active' from all links
+//   this.classList.add('active');
+//   const target = this.getAttribute('href');
+//   tabs.forEach(tab => {
+//     tab.style.display = 'none';
+//   });
+//   document.querySelector(target).style.display = 'block';
+// });
 
 function updateWithdrawableBalance() {
   const withdrawableBalance = totalCoins / 1000;
