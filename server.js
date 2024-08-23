@@ -290,8 +290,8 @@ app.post('/upiWithdrawal', async (req, res) => {
 
 app.post('/bankWithdrawal', async (req, res) => {
   try {
-    const { userId, name, phone, ifsc, account_number : accountNumber , amount} = req.body;
-
+    const { userId, name, phone, ifsc, accountNumber , amount} = req.body;
+    
     // Validate required fields
     if (!userId || !name || !phone || !ifsc || !accountNumber || !amount) {
       return res.status(400).json({ message: 'All fields are required for bank withdrawal' });

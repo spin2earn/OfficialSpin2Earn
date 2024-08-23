@@ -399,7 +399,7 @@ withdrawButton.addEventListener('click', async (e) => {
         phone: phoneInput.value,
         upiId: upiIdInput.value,
         email: emailInput.value,
-        amount: totalCoins,
+        amount: totalCoins/1000,
         userId: userId // Assuming userId is already defined in your scope
       };
     } else if (activeForm.id === 'bank-form') {
@@ -429,7 +429,7 @@ withdrawButton.addEventListener('click', async (e) => {
         phone: phoneInput.value,
         ifsc: ifscInput.value,
         accountNumber: accountNumberInput.value,
-        amount: totalCoins,
+        amount: totalCoins/1000,
         userId: userId // Assuming userId is already defined in your scope
       };
     }
@@ -476,8 +476,11 @@ withdrawButton.addEventListener('click', async (e) => {
 
         if (response.ok) {
           // Handle successful response
+
+          fetchEcoins(userId);
+          fetchUserFullDetails(userId);
+
           console.log('Form submitted successfully');
-          alert('Withdrawal request submitted successfully!');
           activeForm.reset(); // Reset the form after submission
         } else {
           // Handle errors
