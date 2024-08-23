@@ -10,16 +10,16 @@ const { type } = require('os');
 const app = express();
 const token = process.env.TOKEN;
 const bot1 = new Telegraf(process.env.TOKEN);
-const bot = new TelegramBot(token, { polling: true });
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
+const bot = new TelegramBot(token, { polling: false });
+app.use(express.json()); // for parsing application/json
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname, 'views/')));
 app.set('view engine', 'ejs');
 
 const WEBAPP_URL = process.env.WEBAPP;
-const PORT = process.env.PORT;
-const SALT = process.env.SALT ;
-const MongoDBURL = process.env.MongoDBURL;
+const PORT = 3000;
+const SALT = process.env.SALT || 'your-salt-value';
+const MongoDBURL = process.env.MongoDBURL
 const CHANNEL_ID = '@spintestdemo';
 
 let realUserId;
