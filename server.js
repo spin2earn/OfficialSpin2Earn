@@ -5,12 +5,11 @@ const crypto = require('crypto');
 const { Telegraf } = require('telegraf');
 require('dotenv').config();
 const path = require("path");
-const { type } = require('os');
 
 const app = express();
 const token = process.env.TOKEN;
-const bot1 = new Telegraf(process.env.TOKEN);
-const bot = new TelegramBot(token, { polling: false });
+const bot1 = new Telegraf(process.env.TOKEN, {polling: false});
+const bot = new TelegramBot(token, { polling: true });
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname, 'views/')));
