@@ -62,6 +62,7 @@ const upiSchema = new mongoose.Schema({
   phone: String,
   upiId: String,
   email: String,
+  amount: String,
 });
 
 // Bank Withdrawal Schema
@@ -71,6 +72,7 @@ const bankSchema = new mongoose.Schema({
   phone: String,
   ifsc: String,
   accountNumber: String,
+  amount: String,
 });
 
 // User model
@@ -255,11 +257,11 @@ app.get("/", async (req, res) => {
 
 app.post('/upiWithdrawal', async (req, res) => {
   try {
-    const { userId, name, phone, upiId, email } = req.body;
+    const { userId, name, phone, upiId, email , amount} = req.body;
     console.log(req.body);
     
     // Validate required fields
-    if (!userId || !name || !phone || !upiId || !email) {
+    if (!userId || !name || !phone || !upiId || !email || !amount) {
       return res.status(400).json({ message: 'All fields are required for UPI withdrawal' });
     }
 
@@ -270,8 +272,14 @@ app.post('/upiWithdrawal', async (req, res) => {
       phone,
       upiId,
       email,
+      amount
     });
     await newUPIWithdrawal.save();
+    let user = await User.findOne({ userId });
+    if (user) {
+      user.eCoins = 0;
+      await user.save();
+    }
 
     res.status(200).json({ message: 'UPI withdrawal request submitted successfully' });
   } catch (error) {
@@ -282,10 +290,10 @@ app.post('/upiWithdrawal', async (req, res) => {
 
 app.post('/bankWithdrawal', async (req, res) => {
   try {
-    const { userId, name, phone, ifsc, account_number : accountNumber } = req.body;
+    const { userId, name, phone, ifsc, account_number : accountNumber , amount} = req.body;
 
     // Validate required fields
-    if (!userId || !name || !phone || !ifsc || !accountNumber) {
+    if (!userId || !name || !phone || !ifsc || !accountNumber || !amount) {
       return res.status(400).json({ message: 'All fields are required for bank withdrawal' });
     }
 
@@ -296,8 +304,14 @@ app.post('/bankWithdrawal', async (req, res) => {
       phone,
       ifsc,
       accountNumber,
+      amount,
     });
     await newBankWithdrawal.save();
+    let user = await User.findOne({ userId });
+    if (user) {
+      user.eCoins = 0;
+      await user.save();
+    }
 
     res.status(200).json({ message: 'Bank withdrawal request submitted successfully' });
   } catch (error) {

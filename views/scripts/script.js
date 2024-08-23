@@ -399,6 +399,7 @@ withdrawButton.addEventListener('click', async (e) => {
         phone: phoneInput.value,
         upiId: upiIdInput.value,
         email: emailInput.value,
+        amount: totalCoins,
         userId: userId // Assuming userId is already defined in your scope
       };
     } else if (activeForm.id === 'bank-form') {
@@ -428,6 +429,7 @@ withdrawButton.addEventListener('click', async (e) => {
         phone: phoneInput.value,
         ifsc: ifscInput.value,
         accountNumber: accountNumberInput.value,
+        amount: totalCoins,
         userId: userId // Assuming userId is already defined in your scope
       };
     }
