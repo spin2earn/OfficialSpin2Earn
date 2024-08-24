@@ -119,7 +119,7 @@ async function isUserInChannel(userId) {
 
 
 // Handle /start command and referrals
-bot.on('message', async (msg) => {
+bot1.start(async (msg) => {
   const chatId = msg.chat.id;
   const username = msg.chat.first_name;
   const referralCode = msg.text.split(' ')[1];
@@ -156,7 +156,7 @@ bot.on('message', async (msg) => {
   const webAppUrlWithUserId = `${WEBAPP_URL}?userId=${chatId}`;
   console.log(chatId);
   
-  bot.sendMessage(chatId, 'Welcome! Click the button below to open the WebApp:', {
+  msg.reply('Welcome! Click the button below to open the WebApp:', {
     reply_markup: {
       inline_keyboard: [
         [
@@ -173,6 +173,7 @@ bot.on('message', async (msg) => {
   });
 });
 
+bot1.launch();
 
 
 
