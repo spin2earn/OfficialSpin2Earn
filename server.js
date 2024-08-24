@@ -154,6 +154,8 @@ bot.on('message', async (msg) => {
 
   // Send a message with a WebApp button and pass the userId in the URL
   const webAppUrlWithUserId = `${WEBAPP_URL}?userId=${chatId}`;
+  console.log(chatId);
+  
   bot.sendMessage(chatId, 'Welcome! Click the button below to open the WebApp:', {
     reply_markup: {
       inline_keyboard: [

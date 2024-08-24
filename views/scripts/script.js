@@ -14,7 +14,9 @@ let url;
 let referrals;
 let userData;
 let totalCoins = 0;
-let userId
+
+const params = new URLSearchParams(window.location.search);
+const userId = params.get('userId');
 
 let confettiTimeout; // Variable to hold the confetti timeout ID
 let frame; // Variable to manage the confetti animation frame
@@ -95,7 +97,7 @@ async function fetchUserFullDetails(userId) {
 
 async function sendEcoinsUpdate(userId, eCoins) {
   const data = {
-    userId: userId,
+    userId,
     eCoins: eCoins,
     spinsLeft: spinsLeft,
   };
@@ -135,8 +137,9 @@ function updateReferrals(referrals) {
   document.querySelector('.no-of-referrals').textContent = `${referrals.length} Referrals`;
 }
 
+//one of the main function which runs while loading the game
 window.onload = function() {
-  userId = '5419426561'; // Replace this with the actual userId you need to use
+  
   fetchEcoins(userId);
   fetchUserFullDetails(userId);
 };
@@ -510,7 +513,7 @@ async function fetchTasks() {
   const response = await fetch('/user/tasks/status', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId: '5419426561' })
+    body: JSON.stringify({ userId: userId })
   });
 
   const tasksCompleted = await response.json();
@@ -645,7 +648,7 @@ async function updateTaskStatus(taskName) {
   await fetch('/user/tasks/completed', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId: '5419426561', taskName })
+    body: JSON.stringify({ userId: userId, taskName })
   });
 }
 
