@@ -1,5 +1,4 @@
 const express = require('express');
-const TelegramBot = require('node-telegram-bot-api');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const { Telegraf } = require('telegraf');
@@ -7,9 +6,7 @@ require('dotenv').config();
 const path = require("path");
 
 const app = express();
-const token = process.env.TOKEN;
 const bot1 = new Telegraf(process.env.TOKEN);
-const bot = new TelegramBot(token);
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname, 'views/')));
@@ -94,15 +91,25 @@ function generateReferralUrl(userId) {
 }
 
 // Set up the menu button globally
-bot.setChatMenuButton({
+// bot.setChatMenuButton({
+//   menu_button: {
+//     type: 'web_app',
+//     text: 'Open Game',
+//     web_app: { url: WEBAPP_URL }
+//   }
+// }).catch((error) => {
+//   console.error('Error setting menu button:', error);
+// });
+
+bot1.telegram.setChatMenuButton({
   menu_button: {
-    type: 'web_app',
-    text: 'Open Game',
-    web_app: { url: WEBAPP_URL }
-  }
-}).catch((error) => {
-  console.error('Error setting menu button:', error);
-});
+        type: 'web_app',
+        text: 'Open Game',
+        web_app: { url: WEBAPP_URL }
+      }
+    }).catch((error) => {
+      console.error('Error setting menu button:', error);
+})
 
 // Function to check if a user is in a specific channel
 async function isUserInChannel(userId) {
