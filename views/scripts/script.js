@@ -270,7 +270,7 @@ function showResult(degree) {
 
   
   updateTotalCoins();
-  sendEcoinsUpdate('5419426561', prize)
+  sendEcoinsUpdate(userId, prize)
   updateWithdrawableBalance();
   
 }
@@ -655,7 +655,7 @@ async function updateTaskStatus(taskName) {
 function claimReward(reward) {
   totalCoins += reward;
   updateTotalCoins();
-  sendEcoinsUpdate('5419426561', reward)
+  sendEcoinsUpdate(userId, reward)
   updateWithdrawableBalance();
 
   // Wait for 2 seconds before displaying the popup

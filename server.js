@@ -21,7 +21,6 @@ const SALT = process.env.SALT || 'your-salt-value';
 const MongoDBURL = process.env.MongoDBURL
 const CHANNEL_ID = '@spintestdemo';
 
-let realUserId;
 
 // MongoDB connection
 mongoose.connect(MongoDBURL)
@@ -123,7 +122,6 @@ bot1.start(async (msg) => {
   const chatId = msg.chat.id;
   const username = msg.chat.first_name;
   const referralCode = msg.text.split(' ')[1];
-  realUserId = chatId;
 
   // Check if the user already exists in the database
   let user = await User.findOne({ userId: chatId });
@@ -151,7 +149,7 @@ bot1.start(async (msg) => {
       }
     }
   }
-
+ 
   // Send a message with a WebApp button and pass the userId in the URL
   const webAppUrlWithUserId = `${WEBAPP_URL}?userId=${chatId}`;
   console.log(chatId);
