@@ -607,7 +607,10 @@ function goToTask(taskName) {
 
   const link = taskLinks[taskName];
   if (link) {
-    window.location.href = link;
+    const a = document.createElement('a');
+    a.href = link;
+    a.target = '_blank'; // Open in new tab
+    a.click();
   } else {
     console.error(`No link found for task: ${taskName}`);
   }
