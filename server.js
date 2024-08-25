@@ -178,7 +178,7 @@ bot1.start(async (msg) => {
   });
 });
 
-bot1.launch();
+bot1.launch({ dropPendingUpdates: true });
 
 
 
