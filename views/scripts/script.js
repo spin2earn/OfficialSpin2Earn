@@ -8,7 +8,7 @@ const noSpinsLeftPopup = document.querySelector('#no-spins-left');
 const formError = document.querySelector('#form-error-message');
 const linkText = document.querySelector('.the-link')
 const copyBtn = document.querySelector('.referrals-link-btn')
-const shareBtn = document.querySelector('fa-share-nodes')
+// const shareBtn = document.querySelector('fa-share-nodes')
 let spinsLeft; // Adjust this value for the actual spin count
 let url;
 let referrals;
@@ -28,15 +28,15 @@ copyBtn.addEventListener("click",()=>{
   navigator.clipboard.writeText(url);
 })
 
-shareBtn.addEventListener("click",()=>{
-  if(navigator.share){
-    navigator.share({
-      title: "Join!!!",
-      text: "This is the test text for sharing",
-      url: url
-      })
-  }
-})
+// shareBtn.addEventListener("click",()=>{
+//   if(navigator.share){
+//     navigator.share({
+//       title: "Join!!!",
+//       text: "This is the test text for sharing",
+//       url: url
+//       })
+//   }
+// })
 
 
 
