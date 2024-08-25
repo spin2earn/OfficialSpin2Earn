@@ -7,8 +7,8 @@ const path = require("path");
 
 const app = express();
 const bot1 = new Telegraf(process.env.TOKEN);
-app.use(express.json()); // for parsing application/json
-app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
 app.use(express.static(path.join(__dirname, 'views/')));
 app.set('view engine', 'ejs');
 
@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
   tasks: { 
     type: Map, 
     of: Boolean, 
-    default: {} // Map to store task names as keys and their completion status as values
+    default: {} 
   }
 });
 

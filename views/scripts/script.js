@@ -596,8 +596,21 @@ function generateSpecialTaskHTML(taskName, reward, inputId, icon, keyCode) {
 }
 
 function goToTask(taskName) {
-  // Redirect or perform the specific task logic here
-  alert(`Redirecting to ${taskName}`);
+  const taskLinks = {
+    'Join Telegram Channel': 'https://t.me/spintestdemo',
+    'Subscribe Youtube Channel': 'https://www.youtube.com/your_youtube_channel',
+    'Watch Youtube Video': 'https://www.youtube.com/watch?v=your_video_id',
+    'Special Task 1': 'https://example.com/special-task-1',
+    'Special Task 2': 'https://example.com/special-task-2',
+    // Add more tasks and their respective links here
+  };
+
+  const link = taskLinks[taskName];
+  if (link) {
+    window.location.href = link;
+  } else {
+    console.error(`No link found for task: ${taskName}`);
+  }
 }
 
 async function checkTask(button, reward) {
