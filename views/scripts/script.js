@@ -599,7 +599,7 @@ function goToTask(taskName) {
   const taskLinks = {
     'Join Telegram Channel': 'https://t.me/spintestdemo',
     'Subscribe Youtube Channel': 'https://youtube.com/@spin2earn-rvm?si=m7r7G8zLSNU-Zv2T ',
-    'Watch Youtube Video': 'https://www.youtube.com/watch?v=your_video_id',
+    'Watch Youtube Video': 'https://youtu.be/SmRltCNkOQI?si=ruh9kBDTo9O-o9NC',
     'Special Task 1': 'https://link.vipurl.in/18e3vGa',
     'Special Task 2': 'https://link.vipurl.in/18e3vGa',
     // Add more tasks and their respective links here
