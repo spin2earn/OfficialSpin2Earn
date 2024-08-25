@@ -598,10 +598,10 @@ function generateSpecialTaskHTML(taskName, reward, inputId, icon, keyCode) {
 function goToTask(taskName) {
   const taskLinks = {
     'Join Telegram Channel': 'https://t.me/spintestdemo',
-    'Subscribe Youtube Channel': 'https://www.youtube.com/your_youtube_channel',
+    'Subscribe Youtube Channel': 'https://youtube.com/@spin2earn-rvm?si=m7r7G8zLSNU-Zv2T',
     'Watch Youtube Video': 'https://www.youtube.com/watch?v=your_video_id',
-    'Special Task 1': 'https://example.com/special-task-1',
-    'Special Task 2': 'https://example.com/special-task-2',
+    'Special Task 1': 'https://link.vipurl.in/18e3vGa',
+    'Special Task 2': 'https://link.vipurl.in/18e3vGa',
     // Add more tasks and their respective links here
   };
 
@@ -610,11 +610,20 @@ function goToTask(taskName) {
     const a = document.createElement('a');
     a.href = link;
     a.target = '_blank'; // Open in new tab
+
+    // Append the anchor to the body
+    document.body.appendChild(a);
+
+    // Trigger the click event
     a.click();
+
+    // Remove the anchor from the DOM
+    document.body.removeChild(a);
   } else {
     console.error(`No link found for task: ${taskName}`);
   }
 }
+
 
 async function checkTask(button, reward) {
   const isTaskCompleted = confirm('Is this task completed?');
