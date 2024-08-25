@@ -8,7 +8,7 @@ const noSpinsLeftPopup = document.querySelector('#no-spins-left');
 const formError = document.querySelector('#form-error-message');
 const linkText = document.querySelector('.the-link')
 const copyBtn = document.querySelector('.referrals-link-btn')
-const shareBtn = document.querySelector('.referrals-share-btn')
+const shareBtn = document.querySelector('fa-share-nodes')
 let spinsLeft; // Adjust this value for the actual spin count
 let url;
 let referrals;
