@@ -406,10 +406,10 @@ app.post('/getECoins', async (req, res) => {
 });
 
 
-// Cron job to ping the server every 1 minutes to keep it active
-cron.schedule('*/2 * * * *', () => {
+// Cron job to ping the server every 4 minutes to keep it active
+cron.schedule('*/4 * * * *', () => {
   console.log('Pinging the server to keep it active...');
-  fetch(`http://localhost:${port}/checkHealth`)
+  fetch(`${WEBAPP_URL}/checkHealth`)
       .then(res => res.text())
       .then(body => console.log(`Server response: ${body}`))
       .catch(err => console.error('Error pinging the server:', err));
