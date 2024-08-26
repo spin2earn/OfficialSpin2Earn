@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const { Telegraf } = require('telegraf');
 require('dotenv').config();
 const path = require("path");
+const cron = require('node-cron')
 
 const app = express();
 const bot1 = new Telegraf(process.env.TOKEN);
@@ -18,6 +19,10 @@ const SALT = process.env.SALT || 'your-salt-value';
 const MongoDBURL = process.env.MongoDBURL
 const CHANNEL_ID = '@spintestdemo';
 
+
+bot1.telegram.setWebhook(`${process.env.WEBAPP}/bot${process.env.TOKEN}`);
+
+app.use(bot1.webhookCallback(`/bot${process.env.BOT_TOKEN}`));
 
 // MongoDB connection
 mongoose.connect(MongoDBURL)
@@ -160,6 +165,7 @@ bot1.start(async (msg) => {
   // Send a message with a WebApp button and pass the userId in the URL
   const webAppUrlWithUserId = `${WEBAPP_URL}?userId=${chatId}`;
   console.log(chatId);
+  console.log(webAppUrlWithUserId.toString());
   
   msg.reply('Welcome! Click the button below to open the WebApp:', {
     reply_markup: {
@@ -178,7 +184,7 @@ bot1.start(async (msg) => {
   });
 });
 
-bot1.launch({ dropPendingUpdates: true });
+bot1.launch();
 
 
 
@@ -392,6 +398,16 @@ app.post('/getECoins', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
+});
+
+
+// Cron job to ping the server every 12 minutes to keep it active
+cron.schedule('*/12 * * * *', () => {
+  console.log('Pinging the server to keep it active...');
+  fetch(`http://localhost:${port}`)
+      .then(res => res.text())
+      .then(body => console.log(`Server response: ${body}`))
+      .catch(err => console.error('Error pinging the server:', err));
 });
 
 
