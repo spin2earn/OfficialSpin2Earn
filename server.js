@@ -20,10 +20,6 @@ const MongoDBURL = process.env.MongoDBURL
 const CHANNEL_ID = '@spintestdemo';
 
 
-bot1.telegram.setWebhook(`${process.env.WEBAPP}/bot${process.env.TOKEN}`);
-
-app.use(bot1.webhookCallback(`/bot${process.env.BOT_TOKEN}`));
-
 // MongoDB connection
 mongoose.connect(MongoDBURL)
   .then(() => {
