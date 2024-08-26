@@ -402,7 +402,7 @@ app.post('/getECoins', async (req, res) => {
 
 
 // Cron job to ping the server every 12 minutes to keep it active
-cron.schedule('*/12 * * * *', () => {
+cron.schedule('*/5 * * * *', () => {
   console.log('Pinging the server to keep it active...');
   fetch(`http://localhost:${port}`)
       .then(res => res.text())
