@@ -8,6 +8,7 @@ const noSpinsLeftPopup = document.querySelector('#no-spins-left');
 const formError = document.querySelector('#form-error-message');
 const linkText = document.querySelector('.the-link')
 const copyBtn = document.querySelector('.referrals-link-btn')
+import 'https://telegram.org/js/telegram-web-app.js';
 // const shareBtn = document.querySelector('fa-share-nodes')
 let spinsLeft; // Adjust this value for the actual spin count
 let url;
@@ -139,6 +140,7 @@ function updateReferrals(referrals) {
 
 //one of the main function which runs while loading the game
 window.onload = function() {
+  window.Telegrm.WebApp.ready();
   fetchEcoins(userId);
   fetchUserFullDetails(userId);
 };
