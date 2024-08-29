@@ -140,9 +140,9 @@ function updateReferrals(referrals) {
 
 //one of the main function which runs while loading the game
 window.onload = function() {
-  window.Telegrm.WebApp.ready();
   fetchEcoins(userId);
   fetchUserFullDetails(userId);
+  window.Telegrm.WebApp.ready();
 };
 
 function updateTotalCoins() {
