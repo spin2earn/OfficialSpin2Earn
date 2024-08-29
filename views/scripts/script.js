@@ -141,7 +141,7 @@ function updateReferrals(referrals) {
 window.onload = function() {
   fetchEcoins(userId);
   fetchUserFullDetails(userId);
-  window.Telegrm.WebApp.ready();
+  // window.Telegrm.WebApp.ready();
 };
 
 function updateTotalCoins() {
