@@ -44,6 +44,12 @@ const userSchema = new mongoose.Schema({
   }
 });
 
+const specialTaskSchema = new mongoose.Schema({
+  taskName: { type: String, required: true },
+  taskCode: { type: String, required: true },
+  reward: { type: Number, required: true }
+});
+
 // Redeem code schema
 const redeemCodeSchema = new mongoose.Schema({
   code: String
@@ -76,7 +82,7 @@ const User = mongoose.model('User', userSchema);
 const RedeemCode = mongoose.model('RedeemCode', redeemCodeSchema);
 const UPIWithdrawal = mongoose.model('UPIWithdrawal', upiSchema);
 const BankWithdrawal = mongoose.model('BankWithdrawal', bankSchema);
-
+const SpecialTask = mongoose.model('special_tasks', specialTaskSchema);
 
 // Function to generate SHA-1 hash
 function generateHash(text) {
@@ -188,7 +194,8 @@ bot1.launch();
 // Route to check if a user is in the channel
 app.post('/checkUser', async (req, res) => {
   const { userId } = req.body;
-
+  console.log("hitting this checkUser route!!!");
+  
   if (!userId) {
     return res.status(400).json({ error: 'userId is required' });
   }
@@ -265,6 +272,36 @@ app.get("/", async (req, res) => {
   }
 });
 
+
+app.post('/checkSpecialTask', async (req, res) => {
+  const { taskName, inputValue } = req.body;
+
+  try {
+    console.log(taskName);
+    console.log(inputValue);
+    
+    // Find the task in the database
+    const task = await SpecialTask.findOne({ taskName });
+    console.log("Data fetched from tasks: ",task);
+    
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    // Check if the input value matches the task code
+    if (task.taskCode == inputValue) {
+      console.log("Values are correct");
+      
+      return res.status(200).json({ reward: task.reward, message: 'Task completed successfully' });
+    } else {
+      console.log("Invalid input");
+      return res.status(400).json({ message: 'Invalid code' });
+    }
+  } catch (error) {
+    console.error('Error checking special task:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 
 app.post('/upiWithdrawal', async (req, res) => {
@@ -398,14 +435,14 @@ app.post('/getECoins', async (req, res) => {
 });
 
 
-// Cron job to ping the server every 4 minutes to keep it active
-cron.schedule('*/4 * * * *', () => {
-  console.log('Pinging the server to keep it active...');
-  fetch(`${WEBAPP_URL}checkHealth`,{method: 'GET'})
-      .then(res => res.text())
-      .then(body => console.log(`Server response: ${body}`))
-      .catch(err => console.error('Error pinging the server:', err));
-});
+// // Cron job to ping the server every 4 minutes to keep it active
+// cron.schedule('*/4 * * * *', () => {
+//   console.log('Pinging the server to keep it active...');
+//   fetch(`${WEBAPP_URL}checkHealth`,{method: 'GET'})
+//       .then(res => res.text())
+//       .then(body => console.log(`Server response: ${body}`))
+//       .catch(err => console.error('Error pinging the server:', err));
+// });
 
 app.get('/checkHealth',(req,res)=>{
   res.status(200).json("All ok!!!");

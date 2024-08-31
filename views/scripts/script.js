@@ -590,11 +590,14 @@ function generateSpecialTaskHTML(taskName, reward, inputId, icon, keyCode) {
       <div class="task-buttons">
         <button class="go-button" onclick="goToTask('${taskName}')">Go</button>
         <input type="text" id="${inputId}" class="special-input" placeholder="Enter code">
-        <button class="check-button" onclick="checkSpecialTask(this, ${reward}, document.getElementById('${inputId}').value, '${keyCode}')">Submit</button>
+        <button class="check-button" onclick="checkSpecialTask(this, document.getElementById('${inputId}').value)">Submit</button>
       </div>
     </div>
   `;
 }
+
+// Object to store the timestamp of when the "Go" button was clicked
+const taskGoTimes = {};
 
 function goToTask(taskName) {
   const taskLinks = {
@@ -608,6 +611,9 @@ function goToTask(taskName) {
 
   const link = taskLinks[taskName];
   if (link) {
+    // Record the time when "Go" was clicked
+    taskGoTimes[taskName] = new Date().getTime();
+
     const a = document.createElement('a');
     a.href = link;
     a.target = '_blank'; // Open in new tab
@@ -626,48 +632,122 @@ function goToTask(taskName) {
 }
 
 
+
+// Object to store task start times for the check process
+const taskStartTimes = {};
+
 async function checkTask(button, reward) {
-  const isTaskCompleted = confirm('Is this task completed?');
-  if (isTaskCompleted) {
-    const taskItem = button.closest('.task-item');
-    taskItem.classList.add('completed');
-    taskItem.style.display = 'none'; // Hide completed task
+  const taskItem = button.closest('.task-item');
+  const taskName = taskItem.id.replace(/-/g, ' ');
 
-    await updateTaskStatus(taskItem.id.replace(/-/g, ' '));
+  // Check if the "Go" button was clicked
+  if (!taskGoTimes[taskName]) {
+    alert('You need to start the task by clicking the "Go" button first.');
+    return;
+  }
 
+  const currentTime = new Date().getTime();
+
+  // Check if 5 minutes have passed since the "Go" button was clicked
+  if (['Subscribe Youtube Channel', 'Watch Youtube Video'].includes(taskName)) {
+    const elapsedTime = (currentTime - taskGoTimes[taskName]) / 1000; // time in seconds
+
+    if (elapsedTime < 120) { // 2 minutes = 300 seconds
+      alert('First do the task full. Please wait for 2 minutes before marking this task as complete.');
+      return; // Exit if 5 minutes have not passed
+    }
+  }
+
+  if (taskName === 'Join Telegram Channel') {
+    // Check if the user is a member of the Telegram channel
+    try {
+      console.log("Sending request to server to check the user in telegram channel!!!");
+
+      const response = await fetch('/checkUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        if (data.message !== 'True') {
+          alert('You must join the Telegram channel to complete this task.');
+          return; // Exit the function if the user is not a member
+        }
+      } else {
+        console.error('Error checking membership:', data.error);
+        return;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      return;
+    }
+  }
+
+  // Mark the task as completed and update the UI
+  taskItem.classList.add('completed');
+  taskItem.style.display = 'none'; // Hide completed task
+
+  await updateTaskStatus(taskName);
+
+  setTimeout(() => {
+    taskItem.classList.add('move-to-bottom', 'delay');
     setTimeout(() => {
-      taskItem.classList.add('move-to-bottom', 'delay');
+      const tasksContainer = document.getElementById('tasks-container');
+      tasksContainer.appendChild(taskItem);
+      taskItem.classList.remove('move-to-bottom', 'delay');
+    }, 1000);
+  }, 500);
+  claimReward(reward);
+}
+
+
+
+async function checkSpecialTask(button, inputValue) {
+  const taskName = button.closest('.task-item').id.replace(/-/g, ' ');
+  const data = JSON.stringify({ taskName, inputValue })
+  console.log(data);
+  
+  try {
+    const response = await fetch('/checkSpecialTask', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ taskName, inputValue }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      const taskItem = button.closest('.task-item');
+      taskItem.classList.add('completed');
+      taskItem.style.display = 'none'; // Hide completed task
+
+      await updateTaskStatus(taskName);
+      
       setTimeout(() => {
-        const tasksContainer = document.getElementById('tasks-container');
-        tasksContainer.appendChild(taskItem);
-        taskItem.classList.remove('move-to-bottom', 'delay');
-      }, 1000);
-    }, 500);
-    claimReward(reward);
+        taskItem.classList.add('move-to-bottom', 'delay');
+        setTimeout(() => {
+          const tasksContainer = document.getElementById('tasks-container');
+          tasksContainer.appendChild(taskItem);
+          taskItem.classList.remove('move-to-bottom', 'delay');
+        }, 1000);
+      }, 500);
+
+      claimReward(data.reward);
+    } else {
+      alert(data.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred while checking the task. Please try again later.');
   }
 }
 
-async function checkSpecialTask(button, reward, inputValue, keyCode=123123) {
-  if (inputValue.trim() === keyCode) {
-    const taskItem = button.closest('.task-item');
-    taskItem.classList.add('completed');
-    taskItem.style.display = 'none'; // Hide completed task
-
-    await updateTaskStatus(taskItem.id.replace(/-/g, ' '));
-
-    setTimeout(() => {
-      taskItem.classList.add('move-to-bottom', 'delay');
-      setTimeout(() => {
-        const tasksContainer = document.getElementById('tasks-container');
-        tasksContainer.appendChild(taskItem);
-        taskItem.classList.remove('move-to-bottom', 'delay');
-      }, 1000);
-    }, 500);
-    claimReward(reward);
-  } else {
-    alert('Invalid input code');
-  }
-}
 
 async function updateTaskStatus(taskName) {
   await fetch('/user/tasks/completed', {
