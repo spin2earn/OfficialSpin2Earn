@@ -517,8 +517,6 @@ async function fetchTasks() {
   });
 
   const tasksCompleted = await response.json();
-  console.log(tasksCompleted);
-
   updateTaskUI(tasksCompleted);
 }
 
@@ -530,7 +528,15 @@ function updateTaskUI(tasksCompleted) {
 
     // Check if the task is completed
     if (tasksCompleted[taskName] === true) {
-      taskItem.style.display = 'none';  // Hide completed tasks
+      taskItem.classList.add('completed');
+      setTimeout(() => {
+        taskItem.classList.add('move-to-bottom', 'delay');
+        setTimeout(() => {
+          const tasksContainer = document.getElementById('tasks-container');
+          tasksContainer.appendChild(taskItem);
+          taskItem.classList.remove('move-to-bottom', 'delay');
+        }, 1000);
+      }, 500);
     } else {
       taskItem.style.display = 'block'; // Show incomplete or unattempted tasks
     }
@@ -645,7 +651,6 @@ async function checkTask(button, reward) {
     alert('You need to start the task by clicking the "Go" button first.');
     return;
   }
-
   const currentTime = new Date().getTime();
 
   // Check if 5 minutes have passed since the "Go" button was clicked
