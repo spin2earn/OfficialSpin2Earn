@@ -478,7 +478,7 @@ html {
 
 /* Fade out and move task styling */
 .task-item.completed {
-  opacity: 0.5;
+  opacity: 0.6;
   transition: opacity 0.25s ease-in, transform 0.15s ease-out;
   transform: translateY(25px);
 }
@@ -619,6 +619,11 @@ button[type="submit"]:hover {
 
 .nav-link.active .nav-text {
   color: #333;
+}
+
+.nav-link.disable {
+  pointer-events: none; /* This prevents any click events */
+  opacity: 0.6; /* Makes the tab appear disabled */
 }
 
 /* Loading Screen */

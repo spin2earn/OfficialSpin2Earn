@@ -84,10 +84,10 @@ async function fetchUserFullDetails(userId) {
     url = userData.url
     referrals = userData.referralMembers
     updateReferrals(referrals);
-    console.log(referrals);
+    // console.log(referrals);
     
     linkText.innerHTML = url
-    console.log("url: "+ url);
+    // console.log("url: "+ url);
     
   } catch (error) {
     console.error('Error fetching:', error);
@@ -116,7 +116,7 @@ async function sendEcoinsUpdate(userId, eCoins) {
     }
 
     const result = await response.json();
-    console.log('Success:', result);
+    // console.log('Success:', result);
   } catch (error) {
     console.error('Error:', error);
   }
@@ -324,7 +324,7 @@ withdrawalMethodSelect.addEventListener('change', (e) => {
 
 function updateWithdrawableBalance() {
   const withdrawableBalance = totalCoins / 1000;
-  console.log(`Updating withdrawable balance: ${withdrawableBalance}`);
+  // console.log(`Updating withdrawable balance: ${withdrawableBalance}`);
   const withdrawableValueElement = document.getElementById('withdrawable-value');
   withdrawableValueElement.textContent = `₹${withdrawableBalance.toFixed(2)}`;
 }
@@ -465,7 +465,7 @@ withdrawButton.addEventListener('click', async (e) => {
       // Determine the fetch URL based on the form ID
       const fetchUrl = activeForm.id === 'upi-form' ? '/upiWithdrawal' : '/bankWithdrawal';
 
-      console.log(jsonData);
+      // console.log(jsonData);
       
 
       try {
@@ -504,6 +504,7 @@ withdrawButton.addEventListener('click', async (e) => {
 
 document.addEventListener('DOMContentLoaded', function() {
   // Set default active tab
+  fetchTasks();
   document.getElementById('daily-tab').classList.add('active');
   showTasks('daily');
 });
@@ -535,8 +536,8 @@ function updateTaskUI(tasksCompleted) {
           const tasksContainer = document.getElementById('tasks-container');
           tasksContainer.appendChild(taskItem);
           taskItem.classList.remove('move-to-bottom', 'delay');
-        }, 1000);
-      }, 500);
+        }, 1);
+      }, 2);
     } else {
       taskItem.style.display = 'block'; // Show incomplete or unattempted tasks
     }
@@ -545,13 +546,14 @@ function updateTaskUI(tasksCompleted) {
 
 function showTasks(type) {
   // Fetch the tasks' status after loading the tasks
-  fetchTasks();
   const dailyTab = document.getElementById('daily-tab');
   const weeklyTab = document.getElementById('weekly-tab');
   const tasksContainer = document.getElementById('tasks-container');
 
   dailyTab.classList.remove('active');
   weeklyTab.classList.remove('active');
+
+  fetchTasks();
 
   if (type === 'daily') {
     dailyTab.classList.add('active');
@@ -560,13 +562,12 @@ function showTasks(type) {
                                generateTaskHTML('Watch Youtube Video', 150, 'fa fa-youtube') +
                                generateSpecialTaskHTML('Special Task 1', 5000, 'special-input-1', 'fa fa-trophy', '123456') +
                                generateSpecialTaskHTML('Special Task 2', 5000, 'special-input-2', 'fa fa-medal', '9999');
-  } else if (type === 'weekly') {
+  } 
+  else if (type === 'weekly') {
     weeklyTab.classList.add('active');
     tasksContainer.innerHTML = generateTaskHTML('Invite 10 friends', 7000, 'fa fa-people-pulling') +
                                generateTaskHTML('Invite 20 friends', 1500, 'fa fa-users');
   }
-
-
 }
 
 function generateTaskHTML(taskName, reward, icon) {
@@ -637,8 +638,6 @@ function goToTask(taskName) {
   }
 }
 
-
-
 // Object to store task start times for the check process
 const taskStartTimes = {};
 
@@ -666,8 +665,7 @@ async function checkTask(button, reward) {
   if (taskName === 'Join Telegram Channel') {
     // Check if the user is a member of the Telegram channel
     try {
-      console.log("Sending request to server to check the user in telegram channel!!!");
-
+      // console.log("Sending request to server to check the user in telegram channel!!!");
       const response = await fetch('/checkUser', {
         method: 'POST',
         headers: {
@@ -694,8 +692,6 @@ async function checkTask(button, reward) {
 
   // Mark the task as completed and update the UI
   taskItem.classList.add('completed');
-  taskItem.style.display = 'none'; // Hide completed task
-
   await updateTaskStatus(taskName);
 
   setTimeout(() => {
@@ -704,17 +700,15 @@ async function checkTask(button, reward) {
       const tasksContainer = document.getElementById('tasks-container');
       tasksContainer.appendChild(taskItem);
       taskItem.classList.remove('move-to-bottom', 'delay');
-    }, 1000);
-  }, 500);
+    }, 450);
+  }, 230);
   claimReward(reward);
 }
-
-
 
 async function checkSpecialTask(button, inputValue) {
   const taskName = button.closest('.task-item').id.replace(/-/g, ' ');
   const data = JSON.stringify({ taskName, inputValue })
-  console.log(data);
+  // console.log(data);
   
   try {
     const response = await fetch('/checkSpecialTask', {
@@ -753,7 +747,6 @@ async function checkSpecialTask(button, inputValue) {
   }
 }
 
-
 async function updateTaskStatus(taskName) {
   await fetch('/user/tasks/completed', {
     method: 'POST',
@@ -767,8 +760,10 @@ function claimReward(reward) {
   updateTotalCoins();
   sendEcoinsUpdate(userId, reward)
   updateWithdrawableBalance();
-
-  // Wait for 2 seconds before displaying the popup
+  // Disable task buttons and navigation links during the reward claim process
+  disableTaskButtons();
+  disableNavLinks();
+  // Wait for few seconds before displaying the popup
   setTimeout(() => {
     // popup.style.display = 'block';
     // Create a new popup element
@@ -782,18 +777,51 @@ function claimReward(reward) {
     triggerConfetti();
     // Add the popup to the page
     document.body.appendChild(popup);
-
     // Close the popup after 5 seconds
     setTimeout(() => {
       popup.remove();
       stopConfetti();
-    }, 3500);
-
-  }, 1000);
-
-  
+      // Re-enable task buttons and navigation links after the reward is claimed and processed
+      enableTaskButtons();
+      enableNavLinks();
+    }, 4500);
+  }, 600);
 }
 
+function disableTaskButtons() {
+  const taskButtons = document.querySelectorAll('.task-buttons button');
+  taskButtons.forEach(button => button.disabled = true);
+}
+
+function enableTaskButtons() {
+  const taskButtons = document.querySelectorAll('.task-buttons button');
+  taskButtons.forEach(button => button.disabled = false);
+}
+
+// Disable navigation links by adding the "disable" class
+function disableNavLinks() {
+  const navLinks = document.querySelectorAll('.bottom-bar .nav-link');
+  navLinks.forEach(link => {
+    link.classList.add('disable');
+  });
+}
+
+// Enable navigation links by removing the "disable" class
+function enableNavLinks() {
+  const navLinks = document.querySelectorAll('.bottom-bar .nav-link');
+  navLinks.forEach(link => {
+    link.classList.remove('disable');
+  });
+}
+
+// Prevent navigation if the link has the "disable" class
+document.querySelectorAll('.bottom-bar .nav-link').forEach(link => {
+  link.addEventListener('click', function(event) {
+    if (link.classList.contains('disable')) {
+      event.preventDefault();  // Stop the navigation
+    }
+  });
+});
 
 // Navigation between sections
 const navLinks = document.querySelectorAll('.bottom-bar .nav-link');
