@@ -11,7 +11,7 @@ body {
   justify-content: center;
   align-items: center;
   color: white;
-  background: linear-gradient(rgb(0, 0, 0), rgb(92, 91, 91));
+  background: linear-gradient(rgb(0, 0, 0), rgb(50, 50, 50));
 }
 
 html {
@@ -157,10 +157,16 @@ html {
 }
 
 .form-error-message {
-  color: red;
+  color: rgb(212, 0, 0);
   background-color: transparent;
   width: 80%;
   box-shadow: 0 0;
+  text-align: center;
+  margin: 10px auto;
+}
+
+.form-error-message, .form-confirmation-message {
+  color: rgb(0, 128, 0);
 }
 
 #total-coins-wheel-screen {

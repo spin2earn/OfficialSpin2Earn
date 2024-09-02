@@ -6,6 +6,7 @@ const resultValue = document.querySelector('#result-value');
 const spinCountElement = document.querySelector('#spin-count');
 const noSpinsLeftPopup = document.querySelector('#no-spins-left');
 const formError = document.querySelector('#form-error-message');
+const formConfirmation = document.querySelector('#form-confirmation-message');
 const linkText = document.querySelector('.the-link')
 const copyBtn = document.querySelector('.referrals-link-btn')
 // const shareBtn = document.querySelector('fa-share-nodes')
@@ -347,15 +348,22 @@ withdrawButton.addEventListener('click', async (e) => {
 
   let isValid = true;
   let errorMessage = '';
+  let confirmationMessage = 'You Will Receive your money in 3-4 days';
+
+  // Clear previous messages
+  formError.style.display = 'none';
+  formError.textContent = '';
+  formConfirmation.style.display = 'none';
+  formConfirmation.textContent = '';
 
   // Validate name
-  if (nameInput.value.trim() === '') {
+  if (!nameInput || nameInput.value.trim() === '') {
     isValid = false;
     errorMessage = 'Please enter your name';
   }
 
   // Validate phone
-  if (isValid && phoneInput.value.trim() === '') {
+  if (isValid && (!phoneInput || phoneInput.value.trim() === '')) {
     isValid = false;
     errorMessage = 'Please enter your phone number';
   }
@@ -367,6 +375,15 @@ withdrawButton.addEventListener('click', async (e) => {
   }
 
   if (isValid) {
+    formConfirmation.style.display = 'block';
+    formConfirmation.textContent = confirmationMessage;
+
+    // Hide the confirmation message after 1800 milliseconds
+    setTimeout(() => {
+      formConfirmation.style.display = 'none';
+      formConfirmation.textContent = '';
+    }, 1800);
+
     let formData = {};
 
     if (activeForm.id === 'upi-form') {
@@ -374,7 +391,7 @@ withdrawButton.addEventListener('click', async (e) => {
       const upiIdInput = activeForm.querySelector('#upi-id');
       const emailInput = activeForm.querySelector('#email');
 
-      if (upiIdInput.value.trim() === '') {
+      if (!upiIdInput || upiIdInput.value.trim() === '') {
         isValid = false;
         errorMessage = 'Please enter your UPI ID';
       }
@@ -385,7 +402,7 @@ withdrawButton.addEventListener('click', async (e) => {
         errorMessage = 'Invalid UPI ID';
       }
 
-      if (isValid && emailInput.value.trim() === '') {
+      if (!emailInput || emailInput.value.trim() === '') {
         isValid = false;
         errorMessage = 'Please enter your email';
       }
@@ -421,7 +438,7 @@ withdrawButton.addEventListener('click', async (e) => {
         errorMessage = 'Invalid IFSC code';
       }
 
-      if (isValid && accountNumberInput.value.trim() === '') {
+      if (!accountNumberInput || accountNumberInput.value.trim() === '') {
         isValid = false;
         errorMessage = 'Please enter your account number';
       }
@@ -447,16 +464,15 @@ withdrawButton.addEventListener('click', async (e) => {
     }
 
     if (!isValid) {
-      // Display error message
+      // Hide confirmation message and display error message
+      formConfirmation.style.display = 'none';
       formError.style.display = 'block';
-      const errorElement = document.createElement('p');
-      errorElement.textContent = errorMessage;
-      formError.appendChild(errorElement);
+      formError.textContent = errorMessage;
 
-      // Hide the popup after 1.8 seconds
+      // Hide the error message after 1.8 seconds
       setTimeout(() => {
         formError.style.display = 'none';
-        formError.removeChild(errorElement);
+        formError.textContent = '';
       }, 1800);
     } else {
       // Convert formData object to JSON string
@@ -489,7 +505,14 @@ withdrawButton.addEventListener('click', async (e) => {
           // Handle errors
           const errorResponse = await response.json();
           console.error('Form submission failed:', errorResponse.message);
-          alert(`Error: ${errorResponse.message}`);
+          formError.style.display = 'block';
+          formError.textContent = errorMessage;
+
+          // Hide the popup after 1.8 seconds
+          setTimeout(() => {
+            formError.style.display = 'none';
+            formError.textContent = '';
+          }, 1800);
         }
       } catch (error) {
         console.error('Error:', error);
