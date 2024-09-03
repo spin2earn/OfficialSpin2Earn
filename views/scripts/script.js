@@ -16,6 +16,11 @@ let referrals;
 let userData;
 let totalCoins = 0;
 
+let user = {
+  spinCount: 0,     // Start at the first spin
+  totalCoins: 0     // Initial total coins
+};
+
 const params = new URLSearchParams(window.location.search);
 const userId = params.get('userId');
 
@@ -60,6 +65,8 @@ async function fetchEcoins(userId) {
     const data = await response.json();
     totalCoins = data.eCoins; // Assuming the server returns an object with an eCoins property
     spinsLeft = data.spinsLeft;
+    user.spinCount = data.spinsLeft;
+    user.totalCoins = data.eCoins;
     document.getElementById('spin-count').textContent = spinsLeft;
     updateTotalCoins();
   } catch (error) {
@@ -152,10 +159,7 @@ function updateTotalCoins() {
 }
 
 
-let user = {
-  spinCount: 1,     // Start at the first spin
-  totalCoins: 0     // Initial total coins
-};
+
 
 function generatePrizeAmount(user) {
   let spinCount = user.spinCount;
