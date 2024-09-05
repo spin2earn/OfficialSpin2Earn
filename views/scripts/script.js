@@ -65,8 +65,10 @@ async function fetchEcoins(userId) {
     const data = await response.json();
     totalCoins = data.eCoins; // Assuming the server returns an object with an eCoins property
     spinsLeft = data.spinsLeft;
-    user.spinCount = data.spinsLeft;
+    user.spinCount = data.spinsCount;
     user.totalCoins = data.eCoins;
+    console.log("this is the data used in user: "+data.spinsCount);
+    
     document.getElementById('spin-count').textContent = spinsLeft;
     updateTotalCoins();
   } catch (error) {
@@ -108,8 +110,10 @@ async function sendEcoinsUpdate(userId, eCoins) {
     userId,
     eCoins: eCoins,
     spinsLeft: spinsLeft,
+    spinsCount: user.spinCount
   };
-
+  console.log("Data of coins sending with spinCount: ",data);
+  
   try {
     const response = await fetch('/updateEcoins', {
       method: 'POST',
@@ -191,6 +195,7 @@ function generatePrizeAmount(user) {
 
   return prize;
 }
+
 
 function spinWheel() {
   if (spinInProgress) return;

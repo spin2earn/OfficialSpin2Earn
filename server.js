@@ -4,7 +4,8 @@ const crypto = require('crypto');
 const { Telegraf } = require('telegraf');
 require('dotenv').config();
 const path = require("path");
-const cron = require('node-cron')
+const cron = require('node-cron');
+const { type } = require('os');
 
 const app = express();
 const bot1 = new Telegraf(process.env.TOKEN);
@@ -35,6 +36,7 @@ const userSchema = new mongoose.Schema({
   username: String,
   eCoins: { type: Number , default: 0 },
   spinsLeft: {type: Number, default: 3 },
+  spinsCount:{type:Number, default: 1},
   referralUrl: String,
   referrals: [String],
   tasks: { 
@@ -393,9 +395,9 @@ app.post("/checkRedeemCode", async (req, res) => {
 
 // Route to update eCoins when the wheel is spun
 app.post('/updateEcoins', async (req, res) => {
-  const { userId, eCoins , spinsLeft} = req.body;
+  const { userId, eCoins , spinsLeft, spinsCount} = req.body;
 
-  if (!userId || eCoins == null) {
+  if (!userId || eCoins == null || !spinsCount) {
     return res.status(400).json({ error: 'userId and eCoins are required' });
   }
 
@@ -410,8 +412,9 @@ app.post('/updateEcoins', async (req, res) => {
     // Update the user's eCoins
     user.eCoins += eCoins;
     user.spinsLeft = spinsLeft;
+    user.spinsCount = spinsCount;
     await user.save();
-    console.log("eCoins and spinsLeft updated successfully");
+    console.log("eCoins, spinsLeft and spinsCount updated successfully");
     
     return res.status(200).json({ message: 'eCoins and spinsLeft updated successfully', totalECoins: user.eCoins, spinsLeft: user.spinsLeft});
   } catch (error) {
@@ -425,7 +428,7 @@ app.post('/getECoins', async (req, res) => {
   try {
     const user = await User.findOne({ userId: userId });
     if (user) {
-      res.status(200).json({ eCoins: user.eCoins , spinsLeft: user.spinsLeft});
+      res.status(200).json({ eCoins: user.eCoins , spinsLeft: user.spinsLeft, spinsCount: user.spinsCount});
     } else {
       res.status(404).json({ error: 'User not found' });
     }
@@ -436,13 +439,13 @@ app.post('/getECoins', async (req, res) => {
 
 
 // Cron job to ping the server every 4 minutes to keep it active
-cron.schedule('*/4 * * * *', () => {
-  console.log('Pinging the server to keep it active...');
-  fetch(`${WEBAPP_URL}checkHealth`,{method: 'GET'})
-      .then(res => res.text())
-      .then(body => console.log(`Server response: ${body}`))
-      .catch(err => console.error('Error pinging the server:', err));
-});
+// cron.schedule('*/4 * * * *', () => {
+//   console.log('Pinging the server to keep it active...');
+//   fetch(`${WEBAPP_URL}checkHealth`,{method: 'GET'})
+//       .then(res => res.text())
+//       .then(body => console.log(`Server response: ${body}`))
+//       .catch(err => console.error('Error pinging the server:', err));
+// });
 
 app.get('/checkHealth',(req,res)=>{
   res.status(200).json("All ok!!!");
