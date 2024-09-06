@@ -210,18 +210,22 @@ html {
 }
 
 #invite-icon {
+  position: fixed;
+  top: 16%;
   font-size: 80px;
   margin: 5%;
 }
 
 .invite-link {
   /* border: 1px solid white; */
+  position: relative;
   background: #272A2F;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.380);
-  padding: 10px 30px;
+  padding: 10px 20px;
   border-radius: 20px;
+  margin-top: 50%;
   margin-bottom: 3%;
-  width: 100%;
+  width: 90%;
 }
 
 .invite-title {
@@ -236,7 +240,7 @@ html {
 }
 
 .referrals-link-btn {
-  border-radius: 50%;
+  border-radius: 20px;
   margin-left: 3%;
   margin-bottom: 5%;
   background-color: #309CDD;
@@ -253,8 +257,12 @@ html {
 }
 
 .the-link {
-  font-size: 15px;
+  font-size: 16px;
   color: rgb(255, 255, 255);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .no-of-referrals {
@@ -270,14 +278,15 @@ html {
   max-height: 240px;
   overflow-y: auto;
   width: 100%;
-  padding: 3% 2% 3% 8%;
-  border-radius: 15px;
+  padding: 3% 6% 3% 6%;
   box-sizing: border-box;
 }
 
 .friend-name {
+  display: inline-block;
+  border-radius: 20px;
   font-size: 18px;
-  padding: 2%;
+  padding: 2% 8%;
   margin-bottom: 2%;
   box-shadow: 0 0 6px rgba(255, 244, 123, 0.44);
 }
