@@ -37,6 +37,7 @@ html {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 2;
 }
 
 .wheel {
@@ -186,6 +187,40 @@ html {
   margin-top: 10px;
   width: 100px;
   height: 100px;
+}
+
+#coin-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.coin {
+  position: absolute;
+  opacity: 0; /* Starts invisible */
+  width: 15px;
+  height: 15px;
+  background: radial-gradient(circle, #ffd700, #ffcc00); /* Gold-colored coin */
+  border-radius: 50%; /* Circular shape */
+  animation: fall 10s linear infinite; /* Falling animation */
+  z-index: 0; /* Coins behind other elements */
+}
+
+/* Keyframes for the falling animation */
+@keyframes fall {
+  0% {
+      opacity: 1; /* Coin becomes visible */
+      transform: translateY(0) rotate(0deg); /* Start at the top with no rotation */
+  }
+  100% {
+      opacity: 0; /* Coin fades out */
+      transform: translateY(100vh) rotate(360deg); /* Coin falls to the bottom and rotates */
+  }
 }
 
 #add-friend, #profile, #dialy-tasks, #withdrawal-record {

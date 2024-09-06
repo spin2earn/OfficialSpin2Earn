@@ -24,6 +24,7 @@ let user = {
 const params = new URLSearchParams(window.location.search);
 const userId = params.get('userId');
 
+let coinInterval; // Global variable to manage the interval
 let confettiTimeout; // Variable to hold the confetti timeout ID
 let frame; // Variable to manage the confetti animation frame
 let timer; // Variable to hold the confetti timeout ID for adding confetti
@@ -886,6 +887,83 @@ navLinks.forEach(link => {
     });
     document.querySelector(target).style.display = 'block';
   });
+});
+
+// Detect changes in screen navigation (e.g., tab clicks or page changes)
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        if (isWheelScreenActive()) {
+            startCoinCreation(); // Start creating coins if navigating to the wheel screen
+        } else {
+            stopCoinCreation(); // Stop creating coins if navigating away from the wheel screen
+        }
+    });
+});
+
+// Function to create a controlled number of coins
+function createCoins() {
+  const coinContainer = document.getElementById('coin-container'); // Get the coin container
+
+  const coinCount = 5; // Set the number of coins to create in each batch (e.g., 5 coins)
+
+  // Loop to create the specified number of coins
+  for (let i = 0; i < coinCount; i++) {
+      const coin = document.createElement('div'); // Create a new div for each coin
+      coin.classList.add('coin'); // Add the 'coin' class to the div
+
+      // Randomize the coin's horizontal (X-axis) starting position
+      const randomX = Math.random() * window.innerWidth;
+
+      // Set the coin's position: randomX for horizontal, slightly above the screen (-20px)
+      coin.style.left = `${randomX}px`;
+      coin.style.top = `-20px`;
+
+      // Randomize the start delay for each coin's animation to create a natural effect
+      coin.style.animationDelay = `${Math.random() * 9}s`; // Reduce delay to make fewer overlapping coins
+
+      // Add the coin to the container
+      coinContainer.appendChild(coin);
+
+      // Remove the coin after its animation is complete to avoid overcrowding
+      coin.addEventListener('animationend', () => {
+          coin.remove();
+      });
+  }
+}
+
+// Function to start coin creation
+function startCoinCreation() {
+  if (!coinInterval) { // Start interval only if it's not already running
+      createCoins(); // Create initial batch of coins
+      coinInterval = setInterval(createCoins, 1000); // Start creating coins at regular intervals
+  }
+}
+
+// Function to stop coin creation
+function stopCoinCreation() {
+  clearInterval(coinInterval); // Clear the interval
+  coinInterval = null; // Reset the interval variable
+}
+
+// Function to check if the wheel screen is active
+function isWheelScreenActive() {
+  const wheelScreen = document.querySelector('.wheel-screen');
+  return wheelScreen && window.getComputedStyle(wheelScreen).display !== 'none';
+}
+
+// Event listener for tab visibility change
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+      stopCoinCreation(); // Stop creating coins when the tab is inactive
+  } else if (isWheelScreenActive()) {
+      startCoinCreation(); // Resume creating coins when the tab is active and the wheel screen is visible
+  }
+});
+
+window.addEventListener('load', () => {
+  if (isWheelScreenActive()) {
+      startCoinCreation(); // Start coin creation if the wheel screen is initially active
+  }
 });
 
 // Confetti function (or) result effects
