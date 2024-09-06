@@ -3,6 +3,7 @@ html,body {
     padding: 0;
     height: 100%;
     width: 100%;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -16,15 +17,23 @@ body {
 }
 
 button {
-    padding: 15px 30px;
-    font-size: 18px;
-    color: #fff;
-    background-color: #04df25;
+    position: absolute;
+    top: 80%;
+    padding: 15px 70px;
+    font-size: 30px;
+    font-family: 'Roboto Slab', serif;
+    font-weight: 900;
+    color: #3b3b3b;
+    background-color: #f1f30a;
     border: none;
-    border-radius: 5px;
+    border-radius: 12px;
     cursor: pointer;
+    box-shadow: inset 1px 1px 4px black;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
 }
 
 button:hover {
-    background-color: #0ebdb2;
+    background-color: #3b3b3b;
+    color: #f1f30a;
 }
