@@ -265,14 +265,18 @@ app.get("/", async (req, res) => {
 
   try {
     const isMember = await isUserInChannel(userId);
+
     if (!isMember) {
-      return res.status(403).json({ error: 'User is not a member of the channel' });
+      return res.render('join');  // Ensure only one response is sent
     }
-    res.render('page', { userId });
+
+    return res.render('page', { userId });  // Ensure only one response is sent
+
   } catch (error) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 app.post('/checkSpecialTask', async (req, res) => {

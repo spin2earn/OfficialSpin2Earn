@@ -67,7 +67,7 @@ async function fetchEcoins(userId) {
     spinsLeft = data.spinsLeft;
     user.spinCount = data.spinsCount;
     user.totalCoins = data.eCoins;
-    console.log("this is the data used in user: "+data.spinsCount);
+    // console.log("this is the data used in user: "+data.spinsCount);
     
     document.getElementById('spin-count').textContent = spinsLeft;
     updateTotalCoins();
@@ -112,7 +112,7 @@ async function sendEcoinsUpdate(userId, eCoins) {
     spinsLeft: spinsLeft,
     spinsCount: user.spinCount
   };
-  console.log("Data of coins sending with spinCount: ",data);
+  // console.log("Data of coins sending with spinCount: ",data);
   
   try {
     const response = await fetch('/updateEcoins', {
@@ -508,7 +508,7 @@ withdrawButton.addEventListener('click', async (e) => {
           fetchEcoins(userId);
           fetchUserFullDetails(userId);
 
-          console.log('Form submitted successfully');
+          // console.log('Form submitted successfully');
           activeForm.reset(); // Reset the form after submission
         } else {
           // Handle errors
@@ -589,30 +589,30 @@ function showTasks(type) {
 
   if (type === 'daily') {
     dailyTab.classList.add('active');
-    tasksContainer.innerHTML = generateTaskHTML('Join Telegram Channel', 1000, 'fa fa-telegram') +
-                               generateTaskHTML('Subscribe Youtube Channel', 250, 'fa fa-youtube') +
-                               generateTaskHTML('Watch Youtube Video', 150, 'fa fa-youtube') +
+    tasksContainer.innerHTML = generateTaskHTML('Join Telegram Channel', 1000, 'fa fa-telegram',0) +
+                               generateTaskHTML('Subscribe Youtube Channel', 250, 'fa fa-youtube',0) +
+                               generateTaskHTML('Watch Youtube Video', 150, 'fa fa-youtube',0) +
                                generateSpecialTaskHTML('Special Task 1', 5000, 'special-input-1', 'fa fa-trophy', '123456') +
                                generateSpecialTaskHTML('Special Task 2', 5000, 'special-input-2', 'fa fa-medal', '9999');
   } 
   else if (type === 'weekly') {
     weeklyTab.classList.add('active');
-    tasksContainer.innerHTML = generateTaskHTML('Invite 10 friends', 7000, 'fa fa-people-pulling') +
-                               generateTaskHTML('Invite 20 friends', 1500, 'fa fa-users');
+    tasksContainer.innerHTML = generateTaskHTML('Invite 10 friends', 7000, 'fa fa-people-pulling',10) +
+                               generateTaskHTML('Invite 20 friends', 15000, 'fa fa-users',20);
   }
 }
 
-function generateTaskHTML(taskName, reward, icon) {
+function generateTaskHTML(taskName, reward, icon,friends) {
   return `
     <div class="task-item" id="${taskName.replace(/\s+/g, '-')}">
       <div class="task-icon">
         <i class="${icon}"></i>
       </div>
-      <p>${taskName}</p>
+      <p>${taskName}</p><br/>
       <p>Reward: ${reward} coins</p>
       <div class="task-buttons">
         <button class="go-button" onclick="goToTask('${taskName}')">Go</button>
-        <button class="check-button" onclick="checkTask(this, ${reward})">Check</button>
+        <button class="check-button" id="${taskName.replace(/\s+/g, '-')}-check" onclick="checkTask(this, ${reward}, ${friends})">Check</button>
       </div>
     </div>
   `;
@@ -624,7 +624,7 @@ function generateSpecialTaskHTML(taskName, reward, inputId, icon, keyCode) {
       <div class="task-icon">
         <i class="${icon}"></i>
       </div>
-      <p>${taskName}</p>
+      <p>${taskName}</p><br/>
       <p>Reward: ${reward} coins</p>
       <div class="task-buttons">
         <button class="go-button" onclick="goToTask('${taskName}')">Go</button>
@@ -635,69 +635,59 @@ function generateSpecialTaskHTML(taskName, reward, inputId, icon, keyCode) {
   `;
 }
 
-// Object to store the timestamp of when the "Go" button was clicked
-const taskGoTimes = {};
+// Object to store the click status of the "Go" button for each task
+const taskGoClicked = {};
 
+// Function to handle the "Go" button click
 function goToTask(taskName) {
   const taskLinks = {
     'Join Telegram Channel': 'https://t.me/spintestdemo',
-    'Subscribe Youtube Channel': 'https://youtube.com/@spin2earn-rvm?si=m7r7G8zLSNU-Zv2T ',
+    'Subscribe Youtube Channel': 'https://youtube.com/@spin2earn-rvm?si=m7r7G8zLSNU-Zv2T',
     'Watch Youtube Video': 'https://youtu.be/SmRltCNkOQI?si=ruh9kBDTo9O-o9NC',
     'Special Task 1': 'https://link.vipurl.in/18e3vGa',
     'Special Task 2': 'https://link.vipurl.in/18e3vGa',
-    // Add more tasks and their respective links here
   };
 
-  const link = taskLinks[taskName];
-  if (link) {
-    // Record the time when "Go" was clicked
-    taskGoTimes[taskName] = new Date().getTime();
+  // Save task state in localStorage
+  // localStorage.setItem(`${taskName}_started`, 'true');
 
-    const a = document.createElement('a');
-    a.href = link;
-    a.target = '_blank'; // Open in new tab
-
-    // Append the anchor to the body
-    document.body.appendChild(a);
-
-    // Trigger the click event
-    a.click();
-
-    // Remove the anchor from the DOM
-    document.body.removeChild(a);
+  if (taskName.startsWith('Invite')) {
+    const addFriendLink = document.querySelector('a[href="#add-friend"]');
+    if (addFriendLink) {
+      addFriendLink.click();
+    }
   } else {
-    console.error(`No link found for task: ${taskName}`);
+    const link = taskLinks[taskName];
+    if (link) {
+      const a = document.createElement('a');
+      a.href = link;
+      a.target = '_blank'; // Open in new tab
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } else {
+      console.error(`No link found for task: ${taskName}`);
+    }
   }
 }
 
-// Object to store task start times for the check process
-const taskStartTimes = {};
 
-async function checkTask(button, reward) {
+
+async function checkTask(button, reward, friends) {
   const taskItem = button.closest('.task-item');
   const taskName = taskItem.id.replace(/-/g, ' ');
 
-  // Check if the "Go" button was clicked
-  if (!taskGoTimes[taskName]) {
-    alert('You need to start the task by clicking the "Go" button first.');
-    return;
-  }
-  const currentTime = new Date().getTime();
-
-  // Check if 5 minutes have passed since the "Go" button was clicked
+  // Ensure that the "Go" button was clicked before checking for tasks like "Subscribe Youtube Channel" or "Watch Youtube Video"
   if (['Subscribe Youtube Channel', 'Watch Youtube Video'].includes(taskName)) {
-    const elapsedTime = (currentTime - taskGoTimes[taskName]) / 1000; // time in seconds
-
-    if (elapsedTime < 120) { // 2 minutes = 300 seconds
-      alert('First do the task full. Please wait for 2 minutes before marking this task as complete.');
-      return; // Exit if 5 minutes have not passed
+    if (!taskGoClicked[taskName]) {
+      alert('Please click the "Go" button first before checking this task.');
+      return;
     }
   }
 
+  // Check for "Join Telegram Channel"
   if (taskName === 'Join Telegram Channel') {
-    // Check if the user is a member of the Telegram channel
     try {
-      // console.log("Sending request to server to check the user in telegram channel!!!");
       const response = await fetch('/checkUser', {
         method: 'POST',
         headers: {
@@ -707,25 +697,32 @@ async function checkTask(button, reward) {
       });
 
       const data = await response.json();
-      if (response.ok) {
-        if (data.message !== 'True') {
-          alert('You must join the Telegram channel to complete this task.');
-          return; // Exit the function if the user is not a member
-        }
-      } else {
-        console.error('Error checking membership:', data.error);
+      if (response.ok && data.message !== 'True') {
+        alert('You must join the Telegram channel to complete this task.');
         return;
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error checking Telegram membership:', error);
+      return;
+    }
+  }
+
+  // Check for "Invite" tasks (e.g., "Invite 10 friends", "Invite 20 friends")
+  if (taskName === 'Invite 10 friends' || taskName === 'Invite 20 friends') {
+    const actualReferrals = referrals.length;
+
+    if (actualReferrals < friends) {
+      alert(`You need to invite at least ${friends} friends to complete this task.`);
       return;
     }
   }
 
   // Mark the task as completed and update the UI
   taskItem.classList.add('completed');
+  localStorage.setItem(`${taskName}_completed`, 'true');
   await updateTaskStatus(taskName);
 
+  // Move the task to the bottom of the list with a delay
   setTimeout(() => {
     taskItem.classList.add('move-to-bottom', 'delay');
     setTimeout(() => {
@@ -734,8 +731,12 @@ async function checkTask(button, reward) {
       taskItem.classList.remove('move-to-bottom', 'delay');
     }, 450);
   }, 230);
+
+  // Claim the reward for the task
   claimReward(reward);
 }
+
+
 
 async function checkSpecialTask(button, inputValue) {
   const taskName = button.closest('.task-item').id.replace(/-/g, ' ');
@@ -1091,6 +1092,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const mainContent = document.getElementById('main-content');
   let loaded = false;
   let timer;
+
 
   // Function to hide loading screen
   function hideLoadingScreen() {
