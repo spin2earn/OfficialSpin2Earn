@@ -1,0 +1,30 @@
+html,body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    background-image: url(../images/lion.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+button {
+    padding: 15px 30px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #04df25;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0ebdb2;
+}

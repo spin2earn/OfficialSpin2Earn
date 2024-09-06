@@ -679,11 +679,26 @@ async function checkTask(button, reward, friends) {
 
   // Ensure that the "Go" button was clicked before checking for tasks like "Subscribe Youtube Channel" or "Watch Youtube Video"
   if (['Subscribe Youtube Channel', 'Watch Youtube Video'].includes(taskName)) {
-    if (!taskGoClicked[taskName]) {
-      alert('Please click the "Go" button first before checking this task.');
-      return;
-    }
+    // Directly mark the task as completed and give the reward
+    taskItem.classList.add('completed');
+    localStorage.setItem(`${taskName}_completed`, 'true');
+    await updateTaskStatus(taskName);
+
+    // Move the task to the bottom of the list with a delay
+    setTimeout(() => {
+      taskItem.classList.add('move-to-bottom', 'delay');
+      setTimeout(() => {
+        const tasksContainer = document.getElementById('tasks-container');
+        tasksContainer.appendChild(taskItem);
+        taskItem.classList.remove('move-to-bottom', 'delay');
+      }, 450);
+    }, 230);
+
+    // Claim the reward for the task
+    claimReward(reward);
+    return; // Exit the function as the task is completed for YouTube tasks
   }
+
 
   // Check for "Join Telegram Channel"
   if (taskName === 'Join Telegram Channel') {
