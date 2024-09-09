@@ -61,9 +61,9 @@
             <button class="referrals-link-btn">
               <i class="fa-solid fa-link"></i>Copy Link
             </button>
-            <!-- <button class="referrals-share-btn">
+            <button class="referrals-share-btn" id="shareBtn">
               <i class="fa-solid fa-share-nodes"></i>
-            </button> -->
+            </button>
           </div>
           <p class="the-link"></p>
         </div>
@@ -175,6 +175,15 @@
   </div>
   <script src="scripts/script.js"></script>
   <script>
+
+    document.getElementById('shareBtn').addEventListener('click', function() {
+            // Use tg.shareText to share the link
+            console.log("Share Button clicked");
+            const linkText = document.querySelector('.the-link')
+            console.log(linkText.innerHTML);
+            Telegram.WebApp.shareText(linkText.innerHTML);
+        });
+
     document.addEventListener("DOMContentLoaded", function() {
       window.Telegram.WebApp.ready();
       window.Telegram.WebApp.expand();
