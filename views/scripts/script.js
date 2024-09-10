@@ -99,6 +99,22 @@ async function fetchUserFullDetails(userId) {
     
     linkText.innerHTML = url
     // console.log("url: "+ url);
+
+    const shareBtn = document.getElementById('shareBtn');
+      // const shareUrl = window.Telegram.WebApp.getShareUrl();
+      // console.log(shareUrl);
+      const link = document.getElementById('the-link')
+      console.log(url);
+
+      var data = `Here is my referal link, Join now!!! ${url}`
+      shareBtn.addEventListener('click', () => {
+        const urlToShare = url;  // Your link
+        const message = 'This is my referal link, Do join';          // Your message
+        const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(urlToShare)}&text=${encodeURIComponent(message)}`;
+
+        // Redirect to the Telegram share URL
+        window.location.href = telegramUrl;
+      });
     
   } catch (error) {
     console.error('Error fetching:', error);
@@ -526,7 +542,7 @@ withdrawButton.addEventListener('click', async (e) => {
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while submitting your request. Please try again later.');
+        showPopupMessage('An error occurred while submitting your request. Please try again later.');
       }
     }
   }
@@ -714,7 +730,7 @@ async function checkTask(button, reward, friends) {
 
       const data = await response.json();
       if (response.ok && data.message !== 'True') {
-        alert('You must join the Telegram channel to complete this task.');
+        showPopupMessage('You must join the Telegram channel to complete this task.');
         return;
       }
     } catch (error) {
@@ -728,7 +744,7 @@ async function checkTask(button, reward, friends) {
     const actualReferrals = referrals.length;
 
     if (actualReferrals < friends) {
-      alert(`You need to invite at least ${friends} friends to complete this task.`);
+      showPopupMessage(`You need to invite at least ${friends} friends to complete this task.`);
       return;
     }
   }
@@ -788,11 +804,11 @@ async function checkSpecialTask(button, inputValue) {
 
       claimReward(data.reward);
     } else {
-      alert(data.message);
+      showPopupMessage(data.message);
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('An error occurred while checking the task. Please try again later.');
+    showPopupMessage('An error occurred while checking the task. Please try again later.');
   }
 }
 
@@ -903,31 +919,38 @@ navLinks.forEach(link => {
 // Function to create a controlled number of coins
 function createCoins() {
   const coinContainer = document.getElementById('coin-container'); // Get the coin container
-
   const coinCount = 5; // Set the number of coins to create in each batch (e.g., 5 coins)
 
   // Loop to create the specified number of coins
   for (let i = 0; i < coinCount; i++) {
-      const coin = document.createElement('div'); // Create a new div for each coin
-      coin.classList.add('coin'); // Add the 'coin' class to the div
+    // Create a new div for each coin
+    const coin = document.createElement('div');
+    coin.classList.add('coin'); // Add the 'coin' class to the div
 
-      // Randomize the coin's horizontal (X-axis) starting position
-      const randomX = Math.random() * window.innerWidth;
+    // Create an img element for the coin image
+    const coinImg = document.createElement('img');
+    coinImg.src = '../images/ecoin.png';
 
-      // Set the coin's position: randomX for horizontal, slightly above the screen (-20px)
-      coin.style.left = `${randomX}px`;
-      coin.style.top = `-20px`;
+    // Append the image to the coin div
+    coin.appendChild(coinImg);
 
-      // Randomize the start delay for each coin's animation to create a natural effect
-      coin.style.animationDelay = `${Math.random() * 9}s`; // Reduce delay to make fewer overlapping coins
+    // Randomize the coin's horizontal (X-axis) starting position
+    const randomX = Math.random() * window.innerWidth;
 
-      // Add the coin to the container
-      coinContainer.appendChild(coin);
+    // Set the coin's position: randomX for horizontal, slightly above the screen (-20px)
+    coin.style.left = `${randomX}px`;
+    coin.style.top = `-20px`;
 
-      // Remove the coin after its animation is complete to avoid overcrowding
-      coin.addEventListener('animationend', () => {
-          coin.remove();
-      });
+    // Randomize the start delay for each coin's animation to create a natural effect
+    coin.style.animationDelay = `${Math.random() * 9}s`; // Reduce delay to make fewer overlapping coins
+
+    // Add the coin to the container
+    coinContainer.appendChild(coin);
+
+    // Remove the coin after its animation is complete to avoid overcrowding
+    coin.addEventListener('animationend', () => {
+      coin.remove();
+    });
   }
 }
 
@@ -1209,3 +1232,16 @@ document.addEventListener('DOMContentLoaded', function() {
       hideLoadingScreen();
   }, 1000); // 1 second
 });
+
+// pop up messages
+function showPopupMessage(message) {
+  const popup = document.getElementById('popup-message');
+  popup.textContent = message;
+  popup.classList.remove('hidden');
+  popup.classList.add('visible');
+
+  setTimeout(() => {
+    popup.classList.remove('visible');
+    popup.classList.add('hidden');
+  }, 3000);
+}
