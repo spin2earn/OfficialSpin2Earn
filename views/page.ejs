@@ -13,6 +13,7 @@
   <script src="https://kit.fontawesome.com/68d572b50a.js" crossorigin="anonymous"></script>
   <!-- icons -->
    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 </head>
 <body>
 
@@ -62,7 +63,8 @@
               <i class="fa-solid fa-link"></i> Copy Link
             </button>
             <div id="shareBtn" class="referrals-share-btn">
-              <!-- <i class="fa-solid fa-share-nodes"> Share Link</i> -->
+              <i class="fa-solid fa-share-nodes" id="shareBtn"> Share Link</i>
+              <!-- <button id="shareBtn" class="referrals-share-btn">Share Link</button -->
             </div>
           </div>
           <p class="the-link"></p>
@@ -174,31 +176,22 @@
     </nav>
   </div>
   <script src="scripts/script.js"></script>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    // Ensure the Telegram WebApp is ready when the page loads
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", async function() {
       window.Telegram.WebApp.ready();
       window.Telegram.WebApp.expand();
-      createShareButton();
+  
+      // const shareBtn = document.getElementById('shareBtn');
+      // // const shareUrl = window.Telegram.WebApp.getShareUrl();
+      // // console.log(shareUrl);
+      // const link = document.getElementById('the-link')
+      // console.log(link.innerHTML);
+      
+      // var data = `Here is my referal link, Join now!!! ${link.innerHTML}`
+      // shareBtn.addEventListener('click',()=>{
+      //   window.Telegram.WebApp.share(link);
+      // })
     });
-
-    function createShareButton() {
-      const shareUrl = 'https://t.me/Spin_Test_1_bot?start=98a0b7d0a511e319889f';
-      const comment = 'Here you go, this is my referral link. Join this!';
-
-      const script = document.createElement('script');
-      script.src = 'https://telegram.org/js/telegram-widget.js?7';
-      script.setAttribute('data-telegram-share-url', shareUrl);
-      script.setAttribute('data-comment', comment);
-      script.async = true;
-
-      document.getElementById('shareBtn').appendChild(script);
-    }
-
-    // document.getElementById('shareBtn').addEventListener('click', function() {
-    //   createShareButton();
-    // });
-  </script>
+  </script>  
 </body>
 </html>
