@@ -24,7 +24,6 @@ let user = {
 const params = new URLSearchParams(window.location.search);
 const userId = params.get('userId');
 
-let coinInterval; // Global variable to manage the interval
 let confettiTimeout; // Variable to hold the confetti timeout ID
 let frame; // Variable to manage the confetti animation frame
 let timer; // Variable to hold the confetti timeout ID for adding confetti
@@ -105,13 +104,21 @@ async function fetchUserFullDetails(userId) {
       // console.log(shareUrl);
       const link = document.getElementById('the-link')
       console.log(url);
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 5b335d212539beb1ef222542c2bbc18faf99caec
       var data = `Here is my referal link, Join now!!! ${url}`
       shareBtn.addEventListener('click', () => {
         const urlToShare = url;  // Your link
         const message = 'This is my referal link, Do join';          // Your message
         const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(urlToShare)}&text=${encodeURIComponent(message)}`;
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 5b335d212539beb1ef222542c2bbc18faf99caec
         // Redirect to the Telegram share URL
         window.location.href = telegramUrl;
       });
@@ -905,6 +912,7 @@ navLinks.forEach(link => {
   });
 });
 
+<<<<<<< HEAD
 // Detect changes in screen navigation (e.g., tab clicks or page changes)
 navLinks.forEach(link => {
     link.addEventListener('click', () => {
@@ -989,6 +997,8 @@ window.addEventListener('load', () => {
   }
 });
 
+=======
+>>>>>>> 5b335d212539beb1ef222542c2bbc18faf99caec
 // Confetti function (or) result effects
 function triggerConfetti() {
   'use strict';
